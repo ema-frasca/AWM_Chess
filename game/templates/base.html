@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title | capfirst | default:_('AWM-Chess') }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mystyle.css' %}">
+</head>
+<body>
+<div class="header">
+    <h1>AWM-CHESS</h1>
+</div>
+<div class="page">
+    {% block page %}
+    {% endblock %}
+</div>
+</body>
+</html>
