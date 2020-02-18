@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>{{ title | capfirst | default:_('AWM-Chess') }}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'mystyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/template.css' %}">
 </head>
 <body>
 <div class="header">
-    <h1>AWM-CHESS</h1>
+    AWM-CHESS
 </div>
 <div class="page">
     {% block page %}
