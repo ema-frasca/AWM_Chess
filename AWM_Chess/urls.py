@@ -23,5 +23,5 @@ urlpatterns = [
     path('account/create', views.UserCreateView.as_view(), name='signup'),
     path('account/create/done', views.UserCreateDoneView.as_view(), name='signup_done'),
     path('', include('game.urls')),
-    path('', views.index, name='index')
+    path('', views.index, name='index'),
 ]
