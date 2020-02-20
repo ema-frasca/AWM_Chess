@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<div class="login">
+	<h2 class="green">Create account</h2>
+
+	{% for error in form.errors.password2 %}
+	<h5 class="error">{{error}}</h5>
+	{% endfor %}
+
+	<form method="post">
+		{% csrf_token %}
+
+		{% for field in form %}
+		<p>{{field.label_tag}}<br />{{field}}</p>
+		{% endfor %}
+		<button type="submit">Sign up</button>
+	</form>
+</div>
+
+{% endblock %}

@@ -5,12 +5,13 @@
     <title>{{ title | capfirst | default:_('AWM-Chess') }}</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/template.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon-32x32.png' %}"/>
 </head>
 <body>
-<div class="header">
-    AWM-CHESS
+<div id="header">
+    <a href="{% url 'index' %}">AWM-CHESS</a>
 </div>
-<div class="page">
+<div id="page">
     {% block page %}
     {% endblock %}
 </div>

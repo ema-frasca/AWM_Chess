@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<div class="login">
+
+	<p class="green">Your account has been successfully created.</p>
+	<p>If you want to retrieve lost passwords in the future, go to your account settings and add your email.</p>
+
+	<a href="{% url 'home' %}">Go play!</a>
+
+</div>
+
+{% endblock %}

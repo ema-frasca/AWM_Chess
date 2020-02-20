@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<div class="login">
+	<h2 class="green">Login to start playing</h2>
+
+	{% if form.errors %}
+	<h5 class="error">Your username and password didn't match. Please try again.</h5>
+	{% endif %}
+
+	<form method="post">
+		{% csrf_token %}
+
+		{% for field in form %}
+		<p>{{field.label_tag}}<br />{{field}}</p>
+		{% endfor %}
+		<button type="submit">Login</button>
+	</form>
+	{% load static %}
+	<a href="#"><img class="google" src="{% static 'img/btn_google_signin_transparent.png' %}"/></a>
+
+	<div style="text-align: left;">
+		<h4><a href="{% url 'signup' %}">Create account</a></h4>
+		<h4><a href="{% url 'password_reset' %}">Lost password?</a></h4>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,155 @@
+body {
+  font-family: "Comic Sans MS", "Comic Sans", "Courier", Verdana;
+  font-size: 2rem;
+}
+
+* {
+  box-sizing: border-box;
+  transition-duration: 0.4s;
+}
+
+div {
+  padding: 0.5rem;
+}
+
+p {
+  margin: 0.3rem;
+}
+
+input {
+  font-size: 2rem;
+  margin: 0.2rem;
+}
+
+h1, h2, h3 {
+  margin: 0.3rem;
+  font-weight: bold;
+}
+
+h4, h5, h6 {
+  margin: 0rem;
+  font-weight: normal;
+}
+
+h1 {font-size: 2.75rem;}
+h2 {font-size: 2.5rem;}
+h3 {font-size: 2.25rem;}
+h4 {font-size: 1.75rem;}
+h5 {font-size: 1.5rem;}
+h6 {font-size: 1.25rem;}
+
+.green {color: rgba(4, 128, 0, 1);}
+
+button, .button {
+  margin: 0.2rem;
+  padding: 0.3rem;
+  background-color: rgb(0, 139, 186);
+  border: 0.2rem solid rgb(3, 99, 131);
+  border-radius: 0.4rem;
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+}
+
+button:hover, .button:hover {
+  background-color: rgb(70, 163, 194);
+  color: white;
+  box-shadow: 0rem 0.2rem 0.5rem 0 rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+a {
+  color: black;
+}
+
+a:hover {color: rgb(0, 139, 186);}
+
+img .icon {width: 3rem;}
+
+.error {color: red;}
+
+.google {
+  background-image: url("../img/btn_google_signin.png");
+  background-size: 100%;
+  width: 60%;
+  vertical-align: middle;
+}
+
+.google:hover {background-image: url("../img/btn_google_signin_hover.png");}
+
+#header {
+  font-size: 5rem;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0.5rem 0.5rem 1rem rgb(155, 148, 148);
+  background-image: url("../img/chessbg.bmp");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 0 1rem 1rem white inset;
+  /*background:  linear-gradient(180deg, rgb(155, 148, 148) 0%, rgba(255,255,255,1) 80%);; */
+}
+
+#header > a {
+  color: black;
+  text-decoration: none;
+}
+
+#page {
+  width: 90%;
+  margin: auto;
+}
+
+#main-menu {
+  width: 25%;
+  float: left;
+}
+
+#main-menu a {
+  color: black;
+  background-color: white;
+  text-decoration: none;
+  border: 0.5rem solid black;
+  display: block;
+  width: 80%;
+  margin: 1rem 0rem;
+  padding: 0rem 1rem;
+}
+
+#main-menu a:hover {
+  background-color: rgb(255, 249, 199);
+  box-shadow: 0rem 0.5rem 1rem 0 rgba(0, 0, 0, 0.3);
+}
+
+#notification {
+  font-size: 3rem;
+  float: right;
+  color: rgb(3, 99, 131);
+  line-height: 100%;
+  text-shadow: 0.2rem 0.2rem 0.5rem 0 rgba(0, 0, 0, 0.5);
+}
+
+@keyframes popping {
+  0%   {transform: scale(1);}
+  50%  {transform: scale(1.5);}
+  100% {transform: scale(1);}
+}
+
+#content {
+  width: 75%;
+  float: left;
+}
+
+.login {
+  text-align: center;
+  margin: auto;
+  width: 30rem;
+  padding: 0.5rem;
+  background-color: rgba(197, 197, 193, 0.507);
+  border-radius: 0.5rem;
+  box-shadow: 0rem 0.3rem 1rem 0 rgba(0, 0, 0, 0.3);
+}
+
+@media only screen and (max-width: 768px) {
+    
+  }
