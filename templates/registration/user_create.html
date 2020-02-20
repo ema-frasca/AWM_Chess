@@ -5,8 +5,10 @@
 <div class="login">
 	<h2 class="green">Create account</h2>
 
-	{% for error in form.errors.password2 %}
-	<h5 class="error">{{error}}</h5>
+	{% for field in form %}
+		{% for error in field.errors %}
+		<h5 class="error">{{error}}</h5>
+		{% endfor %}
 	{% endfor %}
 
 	<form method="post">

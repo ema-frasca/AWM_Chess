@@ -18,7 +18,7 @@
 		<button type="submit">Login</button>
 	</form>
 	{% load static %}
-	<a href="#"><img class="google" src="{% static 'img/btn_google_signin_transparent.png' %}"/></a>
+	<a href="{% url 'social:begin' 'google-oauth2' %}"><img class="google" src="{% static 'img/btn_google_signin_transparent.png' %}"/></a>
 
 	<div style="text-align: left;">
 		<h4><a href="{% url 'signup' %}">Create account</a></h4>

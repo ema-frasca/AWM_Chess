@@ -2,7 +2,7 @@
  
 To set up a virtual environment on Windows run (in Anaconda Prompt)
 
-    python -m venv venv/
+    python -m venv venv
 
 Then activate it
 
@@ -10,4 +10,4 @@ Then activate it
 
 And install requirements
 
-    pip install -r AWM_Chess/requirements.txt
+    pip install -r AWM_Chess\requirements.txt
