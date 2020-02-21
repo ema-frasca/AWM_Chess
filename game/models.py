@@ -37,36 +37,60 @@ def update_user_profile(sender, instance, created, **kwargs):
 
 
 class Match(models.Model):
-    black = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name="is_black", 
-        blank=True, null=True
-    )
     white = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 
         related_name="is_white", 
         blank=True, null=True
     )
+    black = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name="is_black", 
+        blank=True, null=True
+    )
     quick = models.BooleanField()
     chosen_time = models.DurationField()
     pgn = models.CharField(max_length=2000, blank=True)
 
+    def transfer(self, new):
+        self.delete(keep_parents=True)
+        new.__dict__.update(new.match_ptr.__dict__)
+        new.save()
+        return new
+
 class Lobby(Match):
     random_color = models.BooleanField(default=False)
 
+    def start(self):
+        new = InMatch(match_ptr=self.match_ptr)
+        new = self.transfer(new)
+        if self.quick:
+            new = QuickMatch(inmatch_ptr=new)
+            new.__dict__.update(new.inmatch_ptr.__dict__)
+            new.save()
+        return new
+
 class EndedMatch(Match):
-    result = models.CharField(max_length=3)
+    result = models.CharField(max_length=3, default="*")
 
 # SlowMatch
 class InMatch(Match):
     white_turn = models.BooleanField(default=True)
     last_move = models.DateTimeField(default=now)
 
+    def end(self):
+        new = EndedMatch(match_ptr=self.match_ptr)
+        return self.transfer(new)
+
 class QuickMatch(InMatch):
     # counters initialized at 0 seconds
     white_time = models.DurationField(default=timedelta())
     black_time = models.DurationField(default=timedelta())
+
+    def transfer(self, new):
+        self.inmatch_ptr.delete(keep_parents=True)
+        return super().transfer(new)
+    
 
 # to convert: https://stackoverflow.com/questions/21063078/convert-a-subclass-model-instance-to-another-subclass-model-instance-in-django 
