@@ -1,5 +1,5 @@
 body {
-  font-family: "Comic Sans MS", "Comic Sans", "Courier", Verdana;
+  font-family: "Comic Sans MS", "Comic Sans", "Courier", cursive, sans-serif, Verdana;
   font-size: 2rem;
 }
 
@@ -152,5 +152,8 @@ img .icon {width: 3rem;}
 }
 
 @media only screen and (max-width: 768px) {
-    
-  }
+
+    .login {
+      width: 100%;
+    }
+}

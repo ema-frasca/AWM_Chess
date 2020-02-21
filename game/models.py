@@ -5,6 +5,9 @@ from django.dispatch import receiver
 from django.utils.timezone import now
 from datetime import timedelta
 
+# https://docs.djangoproject.com/en/3.0/topics/db/models/
+
+
 rank_dict = [
     (1200, "Novice"),
     (1400, "Class D"),
@@ -92,5 +95,3 @@ class QuickMatch(InMatch):
         self.inmatch_ptr.delete(keep_parents=True)
         return super().transfer(new)
     
-
-# to convert: https://stackoverflow.com/questions/21063078/convert-a-subclass-model-instance-to-another-subclass-model-instance-in-django 

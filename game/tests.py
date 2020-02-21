@@ -2,7 +2,9 @@ from django.test import TestCase
 from .models import Profile, Match, Lobby, InMatch, QuickMatch, EndedMatch 
 from datetime import timedelta
 
-# Create your tests here.
+# Django testing: https://docs.djangoproject.com/en/3.0/topics/testing/tools/
+# TestCase: https://docs.python.org/3/library/unittest.html#unittest.TestCase
+
 
 class MatchTransferTest(TestCase):
 
