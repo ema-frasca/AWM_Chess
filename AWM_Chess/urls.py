@@ -26,5 +26,5 @@ urlpatterns = [
     path('account/create/done', views.UserCreateDoneView.as_view(), name='signup_done'),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('', include('game.urls')),
-    path('', views.index, name='index'),
+    #path('', views.index, name='index'),
 ]
