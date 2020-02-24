@@ -2,16 +2,10 @@
 
 {% block page %}
 
-<div id="main-menu">
-    <h3><a href="{% url 'home' %}">HOME<span id="notification">2</span></a></h3>
-    <h3><a href="#">QUICK GAME</a></h3>
-    <h3><a href="#">SLOW GAME</a></h3>
-    <h3><a href="#">ACCOUNT</a></h3>
-    <h3><a href="{% url 'logout' %}">EXIT</a></h3>
-</div>
+<div id="root"></div>
 
-<div id="content">
-    <h1>Welcome {{user.username|capfirst}}</h1>
-</div>
+<script src="http://localhost:3000/static/js/bundle.js"></script>
+<script src="http://localhost:3000/static/js/0.chunk.js"></script>
+<script src="http://localhost:3000/static/js/main.chunk.js"></script>
 
 {% endblock %}

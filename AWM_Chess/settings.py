@@ -78,6 +78,11 @@ WSGI_APPLICATION = 'AWM_Chess.wsgi.application'
 # Channels
 ASGI_APPLICATION = 'AWM_Chess.routing.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

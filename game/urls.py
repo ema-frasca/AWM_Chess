@@ -1,11 +1,10 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
 urlpatterns = [
-    # Form-based interface: server-side only
-    #path('', views.room_form, name="room_form"),
-    #path('<int:room_id>/', views.node_form, name="node_form"),
-    #path('<int:room_id>/<int:node_id>/<slug:capability>', views.capability_form, name="capability_form"),
     path('', views.HomeView.as_view(), name='home'),
+    path('quick', views.HomeView.as_view(), name='quick'),
+    path('slow', views.HomeView.as_view(), name='slow'),
+    path('user', views.HomeView.as_view(), name='user'),
 ]
