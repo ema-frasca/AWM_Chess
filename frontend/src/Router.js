@@ -5,23 +5,17 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import HomePage from "./Home"
+import LobbyPage from "./Lobby"
+import AccountPage from "./Account"
+import GamePage from "./Game"
 
-
-class Page extends React.Component {
-    render() {
-        return (
-            <p>
-                "ciaoooo"
-            </p>
-        );
-    }
-}
 
 const menuLines = [
-    {text: "HOME", url: "/", component: <Page />},
-    {text: "QUICK GAME", url: "/quick", component: <Page />},
-    {text: "SLOW GAME", url: "/slow", component: <Page />},
-    {text: "ACCOUNT", url: "/user", component: null}
+    {text: "HOME", url: "/", component: <HomePage />},
+    {text: "QUICK GAME", url: "/quick", component: <LobbyPage quick={true} />},
+    {text: "SLOW GAME", url: "/slow", component: <LobbyPage quick={false} />},
+    {text: "ACCOUNT", url: "/user", component: <AccountPage />}
 ];
 
 function App() {
@@ -40,6 +34,9 @@ function Router() {
 
             <div id="content">
                 <Switch>
+                    <Route path="/game/:id">
+                        <GamePage />
+                    </Route>
                     {menuLines.slice().reverse().map((line, i) => (
                         <Route path={line.url} key={i}>
                             {line.component}
@@ -110,7 +107,7 @@ class LoadingScreen extends React.Component {
 
         return (
             <div className={divClass}>
-                <img className="loading-icon" src="/static/img/loading.png" />
+                <img className="loading-icon" src="/static/img/loading.png" alt="loading"/>
             </div>
         );
     }
