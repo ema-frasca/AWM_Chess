@@ -11,7 +11,7 @@ class Page extends React.Component {
     render() {
         return (
             <p>
-                Ciao stronzo
+                "ciaoooo"
             </p>
         );
     }
@@ -23,6 +23,15 @@ const menuLines = [
     {text: "SLOW GAME", url: "/slow", component: <Page />},
     {text: "ACCOUNT", url: "/user", component: null}
 ];
+
+function App() {
+    return(
+        <div>
+            <Router />
+            <LoadingScreen />
+        </div>
+    );
+}
 
 function Router() {
     return (
@@ -75,4 +84,36 @@ class NotificationPop extends React.Component {
     }
 }
 
-export default Router;
+class LoadingScreen extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            loading: true
+        };
+    }
+
+    componentDidMount() {
+        this.wsChange();
+        global.wsOnStateChange.push(this.wsChange);
+    }
+
+    wsChange = () => {
+        if (global.ws)
+            this.setState({loading: false})
+        else
+            this.setState({loading: true})
+    }
+
+    render () {
+        let divClass = this.state.loading ? "loading-socket" : "hidden";
+
+        return (
+            <div className={divClass}>
+                <img className="loading-icon" src="/static/img/loading.png" />
+            </div>
+        );
+    }
+}
+
+export default App;

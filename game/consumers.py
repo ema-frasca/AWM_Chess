@@ -8,5 +8,6 @@ class MainConsumer(JsonWebsocketConsumer):
     def disconnect(self, close_code):
         pass
 
-    def receive_json(self, json_data):
-        pass
+    def receive_json(self, content):
+        reply = {"text": "Server reply"}
+        self.send_json(reply)
