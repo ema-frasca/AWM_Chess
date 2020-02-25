@@ -1,19 +1,20 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 
-class GamePage extends React.Component {
+function GamePage(){
+    let { id } = useParams()
+    return <Game id={id} />
+}
+
+class Game extends React.Component {
     constructor(props) {
         super(props);
-        this.id = useParams().id;
-
     }
-
-    // {this.props.match.params.id}
 
     render() {
         return (
             <div>
-                Game {this.id}
+                Game {this.props.id}
             </div>
         );
     }
