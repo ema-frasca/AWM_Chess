@@ -1,4 +1,5 @@
 import React from "react";
+import { LoadingPage } from "./utils"
 
 class AccountPage extends React.Component {
     constructor(props) {
@@ -7,7 +8,8 @@ class AccountPage extends React.Component {
         this.pageRequest = {type: "account-page", f: this.getPageInfo, reqId: null};
 
         this.state = {
-            user: {}
+            user: {},
+            loading: true
         }
 
     }
@@ -18,7 +20,7 @@ class AccountPage extends React.Component {
     }
 
     getPageInfo = (content) => {
-        this.setState({user: content});
+        this.setState({user: content, loading: false});
     }
 
     componentWillUnmount() {
@@ -26,22 +28,33 @@ class AccountPage extends React.Component {
     }
 
     render() {
+        if (this.state.loading)
+            return <LoadingPage loading={true}/>;
         const user = this.state.user;
         let email;
-        if (user.email === "")
+        /*if (user.email === "")
             email = <div><button>Add email</button></div>;
         else
-            email = <div>Email: <UserEditField field="email" value={user.email} /></div>;
+            email = <div>Email: <UserEditField field="email" value={user.email} /></div>;*/
         
         return (
             <div>
                 <h1><UserEditField field="username" value={user.username} btnClass="user" /></h1>
                 <h2>Rank: {user.category} ({user.rank})</h2>
-                {email}
-                {this.state.user.google ? "Google account" : <PasswordChange />}
+                Email: <UserEditField field="email" value={user.email} />
+                {this.state.user.google ? <GoogleIcon /> : <PasswordChange />}
             </div>
         );
     }
+}
+
+function GoogleIcon(props) {
+    return (
+        <p className="with-icon">
+            <img className="inline" width="10%" src={global.imgs + "google_account.png"} alt="google icon"></img>
+            Google Account
+        </p>
+    );
 }
 
 class UserEditField extends React.Component {
@@ -79,7 +92,7 @@ class UserEditField extends React.Component {
         if (onEdit)
             this.setState({text: this.props.value});
 
-        if (! onEdit) {
+        if (!onEdit) {
             global.wsSend({
                 type: this.editRequest.type,
                 field: this.props.field,
@@ -91,9 +104,10 @@ class UserEditField extends React.Component {
 
     render() {
         let value = this.props.value;
-        let btnText = "change " + this.props.field;
+        let btnText = this.props.value ? "change " : "add ";
+        btnText += this.props.field;
         if (this.state.onEdit){
-            value = <input type="text" value={this.state.text} style={{width: 1+this.state.text.length + "ch"}}
+            value = <input type="text" value={this.state.text} style={{width: 3+this.state.text.length + "ch"}}
                     onChange={(e) => this.setState({text: e.target.value})} />;
             btnText = "enter";
         }
@@ -136,11 +150,13 @@ class PasswordChange extends React.Component {
     getResponse = (content) => {
         if ("error" in content)
             this.setState({response: content.error, error: true});
-        else
+        else {
+            setTimeout(() => window.location.replace("http://"+window.location.host) , 1000);
             this.setState({
                 onEdit: false, error: false,
-                response: "Your password has been succesfully changed"
+                response: "Your password has been successfully changed"
             });
+        }
     }
 
     handleChange = (e) => {
@@ -151,7 +167,8 @@ class PasswordChange extends React.Component {
         e.preventDefault();
         const onEdit = !this.state.onEdit;
         
-        if (! onEdit) {
+        // Send request if at least one field is not empty
+        if (!onEdit && (this.state.textOld || this.state.textNew1 || this.state.textNew2)) {
             global.wsSend({
                 type: this.pswRequest.type,
                 old: this.state.textOld,
@@ -160,6 +177,8 @@ class PasswordChange extends React.Component {
             });
         } else 
             this.setState({onEdit: onEdit});
+
+        this.setState({textOld: "", textNew1: "", textNew2: "", error: false, response: null});
     }
 
     render() {
@@ -170,9 +189,12 @@ class PasswordChange extends React.Component {
                 <button type="submit">{btnText}</button>
                 <div className={this.state.response ? "form-msg " + (this.state.error ? "red" : "green") : "hidden"}>{this.state.response}</div>
                 <table className={this.state.onEdit ? "" : "hidden"}>
+                    <tbody>
                     <tr><td>Old password: </td><td><input type="password" name="textOld" value={this.state.textOld} onChange={this.handleChange} /></td></tr>
                     <tr><td>New password: </td><td><input type="password" name="textNew1" value={this.state.textNew1} onChange={this.handleChange} /></td></tr>
                     <tr><td>Confirm password: </td><td><input type="password" name="textNew2" value={this.state.textNew2} onChange={this.handleChange} /></td></tr>
+                    <tr><td colSpan="2">You will be redirect to login after a successful change</td></tr>
+                    </tbody>
                 </table>
             </form>
         );

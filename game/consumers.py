@@ -78,7 +78,7 @@ class MainConsumer(JsonWebsocketConsumer):
             try:
                 validate_password(msg["new1"], self.user)
             except ValidationError as val_err:
-                content["error"] = str(val_err.message)
+                content["error"] = str(val_err.messages[0])
             else:
                 self.user.set_password(msg["new1"])
                 self.user.save()

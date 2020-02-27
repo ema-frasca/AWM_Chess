@@ -1,4 +1,8 @@
 
+global.static = "/static/";
+global.imgs = global.static + "imgs/";
+global.sprites = global.static + "sprites/";
+
 // WebSocket
 global.ws = null;
 

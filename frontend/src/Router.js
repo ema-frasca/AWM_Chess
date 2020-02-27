@@ -5,10 +5,13 @@ import {
   Route,
   Link
 } from "react-router-dom";
+
 import HomePage from "./Home"
 import LobbyPage from "./Lobby"
 import AccountPage from "./Account"
 import GamePage from "./Game"
+
+import { LoadingScreen } from "./utils"
 
 
 const menuLines = [
@@ -77,38 +80,6 @@ class NotificationPop extends React.Component {
     render() {
         return (
             <span id="notification">2</span>
-        );
-    }
-}
-
-class LoadingScreen extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            loading: true
-        };
-    }
-
-    componentDidMount() {
-        this.wsChange();
-        global.wsOnStateChange.push(this.wsChange);
-    }
-
-    wsChange = () => {
-        if (global.ws)
-            this.setState({loading: false})
-        else
-            this.setState({loading: true})
-    }
-
-    render () {
-        let divClass = this.state.loading ? "loading-socket" : "hidden";
-
-        return (
-            <div className={divClass}>
-                <img className="loading-icon" src="/static/img/loading.png" alt="loading"/>
-            </div>
         );
     }
 }

@@ -37,6 +37,10 @@ input {
   margin: 0.2rem;
 }
 
+input[type="text"] {
+  min-width: 10rem;
+} 
+
 h1, h2, h3 {
   margin: 0.3rem;
   font-weight: bold;
@@ -86,20 +90,20 @@ img .icon {width: 3rem;}
 .success, .green {color: green;}
 
 .google {
-  background-image: url("../img/btn_google_signin.png");
+  background-image: url("../imgs/btn_google_signin.png");
   background-size: 100%;
   width: 60%;
   vertical-align: middle;
 }
 
-.google:hover {background-image: url("../img/btn_google_signin_hover.png");}
+.google:hover {background-image: url("../imgs/btn_google_signin_hover.png");}
 
 #header {
   font-size: 5rem;
   font-weight: bold;
   text-align: center;
   text-shadow: 0.5rem 0.5rem 1rem rgb(155, 148, 148);
-  background-image: url("../img/chessbg.bmp");
+  background-image: url("../imgs/chessbg.bmp");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -184,6 +188,10 @@ img .icon {width: 3rem;}
   display: flex;
 }
 
+.loading-page {
+
+}
+
 .loading-icon {
   animation: spinning 2s linear infinite;
   width: 10rem; 
@@ -215,6 +223,11 @@ form.inline {
   font-weight: normal;
 }
 
+p.with-icon {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+}
 
 @media only screen and (max-width: 768px) {
   
