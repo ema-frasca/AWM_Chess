@@ -15,6 +15,24 @@ connect();
 function changeWS(ws) {
     global.ws = ws;
     global.wsOnStateChange.forEach((f) => f());
+    if (ws)
+        send_buffer();
+}
+
+let buffer = [];
+
+global.wsSend = (obj) => {
+    if (global.ws)
+        global.ws.send(JSON.stringify(obj));
+    else 
+        buffer.push(obj);
+}
+
+function send_buffer() {
+    while (buffer.length > 0) {
+        const obj = buffer.pop();
+        global.wsSend(obj);
+    }
 }
 
 function connect() {
@@ -23,9 +41,9 @@ function connect() {
 
     ws.onopen = (e) => {
         console.log("WebSocket connect")
-        changeWS(ws);
         timeout = 250;
         clearTimeout(connectInterval);
+        changeWS(ws);
     };
 
     ws.onclose = (e) => {
@@ -39,12 +57,16 @@ function connect() {
 
     // On production deactivate logging errors for security reasons
     ws.onerror = (e) => {
-        console.error("WebSocket error: " + e.message);
+        //console.error("WebSocket error: " + e.message);
         ws.close();
     }
 
     ws.onmessage = (e) => {
-        global.wsOnMessage.forEach((f) => f(e));
+        const message = JSON.parse(e.data);
+        global.wsOnMessage.forEach((listener) => {
+            if (listener.type === message.type)
+                listener.f(message);
+        });
     }
 
 }

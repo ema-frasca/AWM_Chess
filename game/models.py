@@ -31,6 +31,9 @@ class Profile(models.Model):
             if self.rank <= limit:
                 return cat
         return "Unclassified"
+    
+    def get_notifications(self):
+        return 2
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
