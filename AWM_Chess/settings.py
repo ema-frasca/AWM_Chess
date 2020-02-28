@@ -140,6 +140,8 @@ STATICFILES_DIRS = [
 # From mail name
 DEFAULT_FROM_EMAIL = 'system@awmchess.com'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # AUTH
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',

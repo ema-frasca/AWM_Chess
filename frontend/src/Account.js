@@ -32,10 +32,6 @@ class AccountPage extends React.Component {
             return <LoadingPage loading={true}/>;
         const user = this.state.user;
         let email;
-        /*if (user.email === "")
-            email = <div><button>Add email</button></div>;
-        else
-            email = <div>Email: <UserEditField field="email" value={user.email} /></div>;*/
         
         return (
             <div>

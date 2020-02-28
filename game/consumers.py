@@ -1,5 +1,7 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
+from django.db.models import Q
+from game.models import Match, Lobby
 
 
 class MainConsumer(JsonWebsocketConsumer):
@@ -19,6 +21,8 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "account-page", "f": self.account_page},
             {"type": "account-edit", "f": self.account_edit},
             {"type": "account-psw", "f": self.account_psw_change},
+            {"type": "matches-left", "f": self.matches_number_left},
+            {"type": "matches-mylobby", "f": self.get_my_lobby},
         ]
         for r in requests:
             if content["type"] == r["type"]:
@@ -85,5 +89,14 @@ class MainConsumer(JsonWebsocketConsumer):
             
         self.send_json(content)
 
+    def matches_number_left(self, msg):
+        from game.models import match_caps
+        n = Match.objects.exclude(endedmatch__isnull=False).filter(Q(quick=msg["quick"]), Q(white=self.user) | Q(black=self.user)).count()
+        content = msg
+        content["type"] = "matches-left"
+        content["number"] = match_caps[("quick" if msg["quick"] else "slow")] - n
+        
+        self.send_json(content)
 
-
+    def get_my_lobby(self, msg):
+        pass

@@ -21,6 +21,12 @@ rank_dict = [
     (5000, "Grand Master"),
 ]
 
+match_times = {
+    "slow": [12, 18, 24],
+    "quick": [15, 30, 45, 60]
+}
+match_caps = {"slow": 3, "quick": 1}
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,)
     # starting rank at 1200, treshold of novices

@@ -188,9 +188,9 @@ img .icon {width: 3rem;}
   display: flex;
 }
 
-.loading-page {
+/*.loading-page {
 
-}
+}*/
 
 .loading-icon {
   animation: spinning 2s linear infinite;
