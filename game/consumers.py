@@ -99,4 +99,20 @@ class MainConsumer(JsonWebsocketConsumer):
         self.send_json(content)
 
     def get_my_lobby(self, msg):
-        pass
+        content = msg
+        content["type"] = "matches-mylobby"
+        lobby = Lobby.objects.filter(Q(quick=msg["quick"]), Q(white=self.user) | Q(black=self.user)).first()
+        if lobby:
+            content["lobby"] = lobby.to_dict()
+            content["options"] = False
+        else:
+            from game.models import get_options
+            content["lobby"] = False
+            content["options"] = get_options(msg["quick"])
+        
+        self.send_json(content)
+        self.matches_number_left(msg)
+
+    def create_lobby(self, msg):
+
+        self.get_my_lobby(msg)

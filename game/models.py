@@ -23,8 +23,23 @@ rank_dict = [
 
 match_times = {
     "slow": [12, 18, 24],
-    "quick": [15, 30, 45, 60]
+    "quick": [15, 30, 45, 60],
 }
+
+def get_deltatime(quick, time_value):
+    if (quick and time_value in match_times["quick"]):
+        return timedelta(minutes=time_value)
+    elif (not quick and time_value in match_times["slow"]):
+        return timedelta(hours=time_value)
+    return False
+
+colors = ["random", "white", "black"]
+def get_options(quick):
+    options = {"colors": colors}
+    options["times"] = (match_times["quick"] if quick else match_times["slow"])
+    options["unit"] = ("minutes" if quick else "hours")
+    return options
+
 match_caps = {"slow": 3, "quick": 1}
 
 class Profile(models.Model):
@@ -82,6 +97,22 @@ class Lobby(Match):
             new.__dict__.update(new.inmatch_ptr.__dict__)
             new.save()
         return new
+    
+    def to_dict(self):
+        lobby_dict = {
+            "id" : self.pk,
+            "random" : self.random_color,
+            "quick" : self.quick,
+            "time" : int(self.chosen_time.total_seconds() / 60),
+        }
+        if self.white:
+            lobby_dict["white"] = self.white.username
+            lobby_dict["category"] = self.white.profile.category()
+        else:
+            lobby_dict["black"] = self.black.username
+            lobby_dict["category"] = self.black.profile.category()
+
+        return lobby_dict
 
 class EndedMatch(Match):
     result = models.CharField(max_length=3, default="*")

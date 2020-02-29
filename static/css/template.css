@@ -229,6 +229,19 @@ p.with-icon {
   margin: 1rem;
 }
 
+select {
+  font-size: 2rem;
+  border-radius: 0.3rem;
+}
+
+select:hover {
+  cursor: pointer;
+}
+
+/*.select-items {
+  background-color: white;
+}*/
+
 @media only screen and (max-width: 768px) {
   
 }

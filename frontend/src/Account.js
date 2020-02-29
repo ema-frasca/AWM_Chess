@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadingPage } from "./utils"
+import { LoadingPage, addWsListener, removeWsListener } from "./utils"
 
 class AccountPage extends React.Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class AccountPage extends React.Component {
     }
 
     componentDidMount() {
-        this.pageRequest.reqId = global.wsOnMessage.push(this.pageRequest) - 1;
+        this.pageRequest.reqId = addWsListener(this.pageRequest);
         global.wsSend({type: this.pageRequest.type});
     }
 
@@ -24,14 +24,13 @@ class AccountPage extends React.Component {
     }
 
     componentWillUnmount() {
-        global.wsOnMessage.splice(this.pageRequest.reqId, 1);
+        removeWsListener(this.pageRequest.reqId)
     }
 
     render() {
         if (this.state.loading)
             return <LoadingPage loading={true}/>;
         const user = this.state.user;
-        let email;
         
         return (
             <div>
@@ -67,11 +66,11 @@ class UserEditField extends React.Component {
     }
 
     componentDidMount() {
-        this.editRequest.reqId = global.wsOnMessage.push(this.editRequest) - 1;
+        this.editRequest.reqId = addWsListener(this.editRequest);
     }
 
     componentWillUnmount() {
-        global.wsOnMessage.splice(this.editRequest.reqId, 1);
+        removeWsListener(this.editRequest.reqId);
     }
 
     getError = (content) => {
@@ -136,11 +135,11 @@ class PasswordChange extends React.Component {
     }
 
     componentDidMount() {
-        this.pswRequest.reqId = global.wsOnMessage.push(this.pswRequest) - 1;
+        this.pswRequest.reqId = addWsListener(this.pswRequest);
     }
 
     componentWillUnmount() {
-        global.wsOnMessage.splice(this.pswRequest.reqId, 1);
+        removeWsListener(this.pswRequest.reqId);
     }
 
     getResponse = (content) => {

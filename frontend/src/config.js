@@ -10,8 +10,8 @@ global.ws = null;
 global.wsOnStateChange = [];
 
 // Array of function to call on WebSocket message, form of
-// { type: "", f: function }
-global.wsOnMessage = [];
+// id: { type: "", f: function }
+global.wsOnMessage = new Map();
 
 let timeout = 250;
 connect();
@@ -67,7 +67,7 @@ function connect() {
 
     ws.onmessage = (e) => {
         const message = JSON.parse(e.data);
-        global.wsOnMessage.forEach((listener) => {
+        global.wsOnMessage.forEach((listener, key) => {
             if (listener.type === message.type)
                 listener.f(message);
         });

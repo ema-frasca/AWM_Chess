@@ -40,4 +40,14 @@ function LoadingPage(props) {
     );
 }
 
-export { LoadingScreen, LoadingPage };
+function addWsListener(obj) {
+    for (var i=0; global.wsOnMessage.has(i); i++);
+    global.wsOnMessage.set(i, obj);
+    return i;
+}
+
+function removeWsListener(id) {
+    global.wsOnMessage.delete(id)
+}
+
+export { LoadingScreen, LoadingPage, addWsListener, removeWsListener };
