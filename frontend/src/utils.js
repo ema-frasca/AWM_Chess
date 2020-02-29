@@ -32,6 +32,10 @@ class LoadingScreen extends React.Component {
     }
 }
 
+function PieceImg(props) {
+    return <img className="chess-piece" alt={props.piece} src={global.sprites + props.piece + ".png"} ></img>;
+}
+
 function LoadingPage(props) {
     return (
         <div className={props.loading ? "loading-page" : "hidden"}>
@@ -50,4 +54,4 @@ function removeWsListener(id) {
     global.wsOnMessage.delete(id)
 }
 
-export { LoadingScreen, LoadingPage, addWsListener, removeWsListener };
+export { LoadingScreen, LoadingPage, addWsListener, removeWsListener, PieceImg };

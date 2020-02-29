@@ -242,6 +242,48 @@ select:hover {
   background-color: white;
 }*/
 
+.chess-piece {
+  width: 3rem;
+  vertical-align: top;
+}
+
+.lobby-box {
+  border: 0.4rem solid black;
+  color: black;
+  padding: 0rem;
+  width: 80%;
+}
+
+.lobby-link {
+  margin: 0.5rem 0rem;
+  text-decoration: none;
+  display: flex;
+}
+
+.lobby-link div:hover {
+  background-color: rgb(255, 255, 240);
+  box-shadow: 0rem 0.5rem 1rem 0 rgba(0, 0, 0, 0.3);
+}
+
+.lobby-box p,.lobby-box h6 {
+  padding: 0rem 1rem;
+  margin: 0rem;
+}
+
+.lobby-box span:first-child {
+  font-weight: bold;
+}
+
+.lobby-box span:last-child {
+  margin: 0rem 3rem;
+  font-style: oblique;
+}
+
+.lobby-box+button {
+  margin: 0.1rem 1rem;
+}
+
+
 @media only screen and (max-width: 768px) {
   
 }

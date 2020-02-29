@@ -1,5 +1,6 @@
 import React from "react";
-import { LoadingPage, addWsListener, removeWsListener } from "./utils"
+import { Link } from "react-router-dom"
+import { LoadingPage, addWsListener, removeWsListener, PieceImg } from "./utils"
 
 
 class LobbyPage extends React.Component {
@@ -32,7 +33,7 @@ class LobbyPage extends React.Component {
         if (this.state.loading)
             return <LoadingPage loading={true}/>;
         const quick = this.props.quick 
-        //if (quick && this.state.leftMatches === 0) redirect
+        //if (quick && this.state.leftMatches === 0) redirect ATTT
         return (
             <div>
                 {this.state.leftMatches ? <Lobbies quick={quick} /> : <CapReach quick={quick} />}
@@ -44,19 +45,50 @@ class LobbyPage extends React.Component {
 }
 
 function CapReach(props) {
-    return <p>You have reached the maximum number of concurrent games (lobbies included) for {props.quick} games</p>
+    return <p>You have reached the maximum number of concurrent games (lobbies included) for {props.quick ? "quick" : "slow"} games</p>
 }
 
 class Lobbies extends React.Component {
     constructor(props) {
         super(props);
+
+        this.lobbiesRequest = {type: "matches-lobbies", f: this.getLobbies, reqId: null};
+
+        this.state = {
+            lobbies: null,
+            loading: true
+        };
+    }
+
+    componentDidMount() {
+        this.lobbiesRequest.reqId = addWsListener(this.lobbiesRequest);
+        this.sendRequest();
+    }
+
+    sendRequest = () => {
+        global.wsSend({type: this.lobbiesRequest.type, quick: this.props.quick});
+    }
+
+    getLobbies = (content) => {
+        if (content.quick === this.props.quick)
+            this.setState({lobbies: content.lobbies, loading: false});
+    }
+
+    componentWillUnmount() {
+        removeWsListener(this.lobbiesRequest.reqId);
     }
 
     render () {
+        if (this.state.loading)
+            return <LoadingPage loading={true}/>;
+
         return (
             <div>
-                <p>There are no existing game yet</p>
-
+                {this.state.lobbies.length ? null : <p>There are no existing game yet</p>}
+                {this.state.lobbies.map((lobby, i) => (
+                    <ShowLobbyLink {...lobby} key={i} />
+                ))}
+                <button onClick={this.sendRequest}>Update</button>
             </div>
         );
     }
@@ -94,7 +126,7 @@ class MyLobby extends React.Component {
             return <LoadingPage loading={true}/>;
         const myLobby = this.state.myLobby
         if (myLobby === false && this.props.leftMatches === 0)
-            return;
+            return null;
         return (
             <div>
                 {myLobby ? 
@@ -130,7 +162,12 @@ class CreateLobby extends React.Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        alert("Ponyta shiny");
+        global.wsSend({
+            type: this.createMsg.type,
+            quick: this.props.quick,
+            color: this.state.color,
+            time: parseInt(this.state.time)
+        });
     }
 
     render() {
@@ -163,25 +200,50 @@ class CreateLobby extends React.Component {
 
 function ShowLobbyLink(props){
     return(
-        <a>
+        <Link to={"/game/" + props.id} className="lobby-link">
             <ShowLobby {...props} />
-        </a>
+        </Link>
     );
 }
 
 function ShowMyLobby(props) {
     return(
-        <div>
+        <div style={{display: "flex"}}>
             <ShowLobby {...props} />
-            Eradicate
+            <button onClick={(e) => {
+                global.wsSend({type: "matches-delete", id: props.id, quick: props.quick});
+            }}>delete</button>
         </div>
     );
 }
 
 function ShowLobby(props) {
+    // props: {"id":16,"random":true,"quick":false,"time":720,"white":"semgay","category":"Novice"}
+    let username, colorIcon = null, piecesText =  null;
+
+    if ("black" in props) {
+        username = props.black;
+        colorIcon = <PieceImg piece="black_king"/>;
+    } else {
+        username = props.white;
+        colorIcon = <PieceImg piece="white_king"/>;
+    }
+    
+    if (props.random === true) {
+        piecesText = "Chess pieces: random";
+        colorIcon = null;
+    }
+
+    let timeStr;
+    if (props.quick)
+        timeStr = props.time + " minutes";
+    else
+        timeStr = props.time / 60 + " hours";
+
     return(
-        <div>
-            {JSON.stringify(props)}
+        <div className="lobby-box">
+            <p><span>{username}</span><span>({props.category})</span>{colorIcon}<span>{timeStr}</span></p>
+            <h6>{piecesText}</h6>
         </div>
     );
 }

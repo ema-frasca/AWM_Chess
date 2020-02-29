@@ -31,9 +31,10 @@ def get_deltatime(quick, time_value):
         return timedelta(minutes=time_value)
     elif (not quick and time_value in match_times["slow"]):
         return timedelta(hours=time_value)
-    return False
+    return None
 
 colors = ["random", "white", "black"]
+
 def get_options(quick):
     options = {"colors": colors}
     options["times"] = (match_times["quick"] if quick else match_times["slow"])
@@ -55,6 +56,11 @@ class Profile(models.Model):
     
     def get_notifications(self):
         return 2
+    
+    def left_matches(self, quick):
+        n = Match.user_matches(self.user).exclude(endedmatch__isnull=False).filter(quick=quick).count()
+        left = match_caps[("quick" if quick else "slow")] - n
+        return left
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
@@ -86,8 +92,57 @@ class Match(models.Model):
         new.save()
         return new
 
+    def has_user(self, user):
+        if user == self.white or user == self.black:
+            return True
+        return False
+
+    def versus(self, user=None):
+        if not user:
+            return (self.white if self.white else self.black)
+        if user == self.white:
+            return self.black
+        if user == self.black:
+            return self.white
+        return None
+
+    @classmethod
+    def user_matches(cls, user, player=True):
+        if player:
+            return cls.objects.filter(models.Q(white=user) | models.Q(black=user))
+        else:
+            return cls.objects.exclude(models.Q(white=user) | models.Q(black=user))
+        
+    @classmethod
+    def get_or_none(cls, id):
+        match = None
+        try:
+            match = cls.objects.get(pk=id)
+        except cls.DoesNotExist:
+            pass
+
+        return match
+
 class Lobby(Match):
     random_color = models.BooleanField(default=False)
+
+    def join_match(self, user):
+        # Check if user can join
+        if self.has_user(user) or user.profile.left_matches(user, self.quick) == 0 :
+            return None
+
+        # Join the user
+        if self.random_color:
+            from random import randint
+            if randint(0, 1):
+                self.black = self.white
+        if self.white:
+            self.black = user
+        else
+            self.white = user
+        self.save()
+
+        return self.start()
 
     def start(self):
         new = InMatch(match_ptr=self.match_ptr)
@@ -113,6 +168,23 @@ class Lobby(Match):
             lobby_dict["category"] = self.black.profile.category()
 
         return lobby_dict
+    
+    def initialize(self, user, quick, color, time):
+        self.quick = quick
+        td = get_deltatime(quick, time)
+        if not td or color not in colors: 
+            return None
+        self.chosen_time = td
+
+        if color == "random":
+            self.random_color = True
+        if color == "black": 
+            self.black = user 
+        else: 
+            self.white = user
+        
+        self.save()
+        return self
 
 class EndedMatch(Match):
     result = models.CharField(max_length=3, default="*")
@@ -125,6 +197,12 @@ class InMatch(Match):
     def end(self):
         new = EndedMatch(match_ptr=self.match_ptr)
         return self.transfer(new)
+
+    def user_has_turn(self, user):
+        if self.white_turn:
+            return user == self.white
+        else:
+            return user == self.black
 
 class QuickMatch(InMatch):
     # counters initialized at 0 seconds
