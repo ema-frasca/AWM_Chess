@@ -13,8 +13,8 @@ class MainConsumer(JsonWebsocketConsumer):
             return
         self.accept()
         async_to_sync(self.channel_layer.group_add)(str(self.user.id), self.channel_name)
-        self.loaded_games = False
         self.requests = [
+            {"type": "home-page", "f": self.home_page},
             {"type": "account-page", "f": self.account_page},
             {"type": "account-edit", "f": self.account_edit},
             {"type": "account-psw", "f": self.account_psw_change},
@@ -26,6 +26,7 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "game-page", "f": self.game_page},
         ]
         self.games = {}
+        self.load_games()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(str(self.user.id), self.channel_name)
@@ -34,11 +35,8 @@ class MainConsumer(JsonWebsocketConsumer):
         for r in self.requests:
             if content["type"] == r["type"]:
                 r["f"](content)
-        if not self.loaded_games:
-            self.load_games()
         
     def load_games(self):
-        self.loaded_games = True
         matches = InMatch.user_matches(self.user)
         for match in matches:
             self.games[match.pk] = chess.pgn.read_game(StringIO(match.pgn), Visitor= chess.pgn.BoardBuilder)
@@ -46,6 +44,14 @@ class MainConsumer(JsonWebsocketConsumer):
     def message_opponent(self, match, msg):
         opponent = match.versus(self.user)
         async_to_sync(self.channel_layer.group_send)(str(opponent.id), msg)
+
+    def home_page(self, msg=None):
+        matches = InMatch.user_matches(self.user)
+        content = {
+            "type" : "home-page",
+            "list" : [match.pk for match in matches]
+        }
+        self.send_json(content)
 
     def account_page(self, msg=None):
         content = {
@@ -158,14 +164,13 @@ class MainConsumer(JsonWebsocketConsumer):
             return None
         match = lobby.join_match(self.user)
         if match:
-            self.message_opponent(match, {"type": "get.my.lobby", "quick": match["quick"]})
+            self.message_opponent(match, {"type": "get.my.lobby", "quick": match.quick})
             self.games[match.pk] = chess.Board()
         return match
 
     def game_page(self, msg):
         content = msg
         content["type"] = "game-page"
-        #controllo inmatch, lobby e endedmatch per verificare quale funzione di get chiamare
         match = InMatch.get_or_none(msg["id"])
         if not match:
             match = EndedMatch.get_or_none(msg["id"])
@@ -173,8 +178,26 @@ class MainConsumer(JsonWebsocketConsumer):
                 match = self.start_game(msg)
                 if not match:
                     content["error"] = "The selected game doesn't exist anymore"
+                    self.send_json(content)
+                    return
         elif match.quick:
             match = QuickMatch.objects.get(pk=match.pk)
+
+        if not match.has_user(self.user):
+            return None
+            
         content["match"] = match.to_dict()
+
+        if isinstance(match, EndedMatch):
+            content["board"] = match.last_fen
+            content["result"] = match.user_result(self.user)
+        else:
+            content["board"] = self.games[match.pk].board_fen()
+            if match.user_has_turn(self.user):
+                content["moves"] = [move.uci() for move in self.games[match.pk].legal_moves]
+                content["claim"] = self.games[match.pk].can_claim_draw()
+            else:
+                content["moves"] = []
+                content["claim"] = False
 
         self.send_json(content)

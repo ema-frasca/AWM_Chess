@@ -6,12 +6,12 @@ import {
   Link
 } from "react-router-dom";
 
-import HomePage from "./Home"
-import LobbyPage from "./Lobby"
-import AccountPage from "./Account"
-import GamePage from "./Game"
+import HomePage from "./Home";
+import LobbyPage from "./Lobby";
+import AccountPage from "./Account";
+import GamePage from "./Game";
 
-import { LoadingScreen } from "./utils"
+import { LoadingScreen } from "./utils";
 
 
 const menuLines = [

@@ -1,6 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom"
-import { LoadingPage, addWsListener, removeWsListener, PieceImg } from "./utils"
+import { Link } from "react-router-dom";
+import { LoadingPage, addWsListener, removeWsListener, PieceImg } from "./utils";
 
 
 class LobbyPage extends React.Component {

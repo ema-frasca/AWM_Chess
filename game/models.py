@@ -137,7 +137,7 @@ class Lobby(Match):
 
     def join_match(self, user):
         # Check if user can join
-        if self.has_user(user) or user.profile.left_matches(user, self.quick) == 0 :
+        if self.has_user(user) or user.profile.left_matches(self.quick) == 0 :
             return None
 
         # Join the user
@@ -194,7 +194,34 @@ class Lobby(Match):
         return self
 
 class EndedMatch(Match):
-    result = models.CharField(max_length=3, default="*")
+    result = models.CharField(max_length=10, default="*")
+    last_fen = models.CharField(max_length=70, default="")
+    end_reason = models.CharField(max_length=50, default="")
+
+    def to_dict(self):
+        match_dict = {
+            "pgn" : self.pgn,
+            "black" : self.black.profile.to_dict(),
+            "white" : self.white.profile.to_dict(),
+            "reason" : self.end_reason,
+        }
+        return match_dict
+
+    def user_result(self, user):
+        if self.result == "Draw":
+            return self.result
+        if self.white == user:
+            if self.result == "White":
+                return "You won"
+            else:
+                return "You lost"
+        elif self.black == user:
+            if self.result == "Black":
+                return "You won"
+            else:
+                return "You lost"
+        else:
+            return self.result + " won"
 
 # SlowMatch
 class InMatch(Match):
@@ -229,6 +256,7 @@ class InMatch(Match):
             "black" : self.black.profile.to_dict(),
             "white" :self.white.profile.to_dict(),
             "time" : self.get_times(),
+            "whiteTurn" : self.white_turn,
         }
         return match_dict
 
@@ -241,3 +269,14 @@ class QuickMatch(InMatch):
         self.inmatch_ptr.delete(keep_parents=True)
         return super().transfer(new)
     
+    def get_times(self):
+        if self.white_turn:
+            return {
+                "black" : minutes(self.chosen_time-self.black_time),
+                "white" : minutes(self.chosen_time-self.white_time-(now()- self.last_move)),
+            }
+        else:
+            return {
+                "white" : minutes(self.chosen_time-self.white_time),
+                "black" : minutes(self.chosen_time-self.black_time-(now()- self.last_move)),
+            }
