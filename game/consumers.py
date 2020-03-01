@@ -1,6 +1,7 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from game.models import Match, Lobby
+import chess
 
 
 class MainConsumer(JsonWebsocketConsumer):
@@ -20,6 +21,7 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "matches-mylobby", "f": self.get_my_lobby},
             {"type": "matches-create", "f": self.create_lobby},
             {"type": "matches-delete", "f": self.delete_lobby},
+            {"type": "game-page", "f": self.game_page},
         ]
 
     def disconnect(self, close_code):
@@ -29,6 +31,10 @@ class MainConsumer(JsonWebsocketConsumer):
         for r in self.requests:
             if content["type"] == r["type"]:
                 r["f"](content)
+
+    def message_opponent(self, match, msg):
+        opponent = match.versus(self.user)
+        async_to_sync(self.channel_layer.group_send)(str(opponent.id), msg)
 
     def account_page(self, msg=None):
         content = {
@@ -139,7 +145,12 @@ class MainConsumer(JsonWebsocketConsumer):
         lobby = Lobby.get_or_none(msg["id"])
         if not lobby:
             return None
-        vs_user = lobby.versus()
         match = lobby.join_match(self.user)
-        # messaggio ad altro utente per aggiornare mylobby
+        self.message_opponent(match, {"type": "get.my.lobby", "quick": match["quick"]})
         return match
+
+    def game_page(self, msg):
+        content = msg
+        
+
+        self.send_json(content)

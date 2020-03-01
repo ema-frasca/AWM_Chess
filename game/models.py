@@ -138,7 +138,7 @@ class Lobby(Match):
                 self.black = self.white
         if self.white:
             self.black = user
-        else
+        else:
             self.white = user
         self.save()
 
