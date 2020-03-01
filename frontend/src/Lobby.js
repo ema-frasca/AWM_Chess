@@ -219,13 +219,15 @@ function ShowMyLobby(props) {
 
 function ShowLobby(props) {
     // props: {"id":16,"random":true,"quick":false,"time":720,"white":"semgay","category":"Novice"}
-    let username, colorIcon = null, piecesText =  null;
+    let username, category, colorIcon = null, piecesText =  null;
 
     if ("black" in props) {
-        username = props.black;
+        username = props.black.username;
+        category = props.black.category;
         colorIcon = <PieceImg piece="black_king"/>;
     } else {
-        username = props.white;
+        username = props.white.username;
+        category = props.white.category;
         colorIcon = <PieceImg piece="white_king"/>;
     }
     
@@ -242,7 +244,7 @@ function ShowLobby(props) {
 
     return(
         <div className="lobby-box">
-            <p><span>{username}</span><span>({props.category})</span>{colorIcon}<span>{timeStr}</span></p>
+            <p><span>{username}</span><span>({category})</span>{colorIcon}<span>{timeStr}</span></p>
             <h6>{piecesText}</h6>
         </div>
     );

@@ -43,6 +43,9 @@ def get_options(quick):
 
 match_caps = {"slow": 3, "quick": 1}
 
+def minutes(td):
+    return int(td.total_seconds() / 60)
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,)
     # starting rank at 1200, treshold of novices
@@ -61,6 +64,12 @@ class Profile(models.Model):
         n = Match.user_matches(self.user).exclude(endedmatch__isnull=False).filter(quick=quick).count()
         left = match_caps[("quick" if quick else "slow")] - n
         return left
+
+    def to_dict(self):
+        return {
+            "username" : self.user.username,
+            "category" : self.category(),
+        }
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
@@ -84,7 +93,7 @@ class Match(models.Model):
     )
     quick = models.BooleanField()
     chosen_time = models.DurationField()
-    pgn = models.CharField(max_length=2000, blank=True)
+    pgn = models.CharField(max_length=2000, default="*")
 
     def transfer(self, new):
         self.delete(keep_parents=True)
@@ -158,14 +167,12 @@ class Lobby(Match):
             "id" : self.pk,
             "random" : self.random_color,
             "quick" : self.quick,
-            "time" : int(self.chosen_time.total_seconds() / 60),
+            "time" : minutes(self.chosen_time),
         }
         if self.white:
-            lobby_dict["white"] = self.white.username
-            lobby_dict["category"] = self.white.profile.category()
+            lobby_dict["white"] = self.white.profile.to_dict()
         else:
-            lobby_dict["black"] = self.black.username
-            lobby_dict["category"] = self.black.profile.category()
+            lobby_dict["black"] = self.black.profile.to_dict()
 
         return lobby_dict
     
@@ -203,6 +210,27 @@ class InMatch(Match):
             return user == self.white
         else:
             return user == self.black
+
+    def get_times(self):
+        if self.white_turn:
+            return {
+                "black" : minutes(self.chosen_time),
+                "white" : minutes(self.chosen_time-(now()- self.last_move)),
+            }
+        else:
+            return {
+                "white" : minutes(self.chosen_time),
+                "black" : minutes(self.chosen_time-(now()- self.last_move)),
+            }
+
+    def to_dict(self):
+        match_dict = {
+            "pgn" : self.pgn,
+            "black" : self.black.profile.to_dict(),
+            "white" :self.white.profile.to_dict(),
+            "time" : self.get_times(),
+        }
+        return match_dict
 
 class QuickMatch(InMatch):
     # counters initialized at 0 seconds

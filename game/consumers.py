@@ -1,7 +1,8 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
-from game.models import Match, Lobby
-import chess
+from game.models import Match, Lobby, InMatch, EndedMatch, QuickMatch
+import chess, chess.pgn
+from io import StringIO
 
 
 class MainConsumer(JsonWebsocketConsumer):
@@ -12,6 +13,7 @@ class MainConsumer(JsonWebsocketConsumer):
             return
         self.accept()
         async_to_sync(self.channel_layer.group_add)(str(self.user.id), self.channel_name)
+        self.loaded_games = False
         self.requests = [
             {"type": "account-page", "f": self.account_page},
             {"type": "account-edit", "f": self.account_edit},
@@ -23,6 +25,7 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "matches-delete", "f": self.delete_lobby},
             {"type": "game-page", "f": self.game_page},
         ]
+        self.games = {}
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(str(self.user.id), self.channel_name)
@@ -31,6 +34,14 @@ class MainConsumer(JsonWebsocketConsumer):
         for r in self.requests:
             if content["type"] == r["type"]:
                 r["f"](content)
+        if not self.loaded_games:
+            self.load_games()
+        
+    def load_games(self):
+        self.loaded_games = True
+        matches = InMatch.user_matches(self.user)
+        for match in matches:
+            self.games[match.pk] = chess.pgn.read_game(StringIO(match.pgn), Visitor= chess.pgn.BoardBuilder)
 
     def message_opponent(self, match, msg):
         opponent = match.versus(self.user)
@@ -146,11 +157,24 @@ class MainConsumer(JsonWebsocketConsumer):
         if not lobby:
             return None
         match = lobby.join_match(self.user)
-        self.message_opponent(match, {"type": "get.my.lobby", "quick": match["quick"]})
+        if match:
+            self.message_opponent(match, {"type": "get.my.lobby", "quick": match["quick"]})
+            self.games[match.pk] = chess.Board()
         return match
 
     def game_page(self, msg):
         content = msg
-        
+        content["type"] = "game-page"
+        #controllo inmatch, lobby e endedmatch per verificare quale funzione di get chiamare
+        match = InMatch.get_or_none(msg["id"])
+        if not match:
+            match = EndedMatch.get_or_none(msg["id"])
+            if not match:
+                match = self.start_game(msg)
+                if not match:
+                    content["error"] = "The selected game doesn't exist anymore"
+        elif match.quick:
+            match = QuickMatch.objects.get(pk=match.pk)
+        content["match"] = match.to_dict()
 
         self.send_json(content)
