@@ -60,9 +60,9 @@ function InGame(props){
     return(
         <div>
             <div className='game-container'>
-                <UserTime user={props.match.black} time={props.match.time.black} color="black" turn={!props.match.whiteTurn}/>
-                <ChessBoard board={props.board}/>
-                <UserTime user={props.match.white} time={props.match.time.white} color="white" turn={props.match.whiteTurn}/>
+                <UserTime user={props.match.black} time={props.match.time.black} piece="k" turn={!props.match.whiteTurn}/>
+                <ChessBoard board={props.board} moves={props.moves}/>
+                <UserTime user={props.match.white} time={props.match.time.white} piece="K" turn={props.match.whiteTurn}/>
                 <ChessButtons id={props.id} claim={props.claim}/>
             </div>
             <MovesList pgn={props.match.pgn}/>
@@ -109,7 +109,7 @@ class UserTime extends React.Component {
         const time = (parseInt(this.state.time/60)).toString().padStart(2, "0") + ":" +(this.state.time%60).toString().padStart(2, "0");
         return(
             <div>
-                <UserLine user={this.props.user} color={this.props.color} turn={this.props.turn}/>
+                <UserLine user={this.props.user} piece={this.props.piece} turn={this.props.turn}/>
                 <p style={{float:"right"}}>{time}</p>
             </div>
         );
@@ -119,7 +119,7 @@ class UserTime extends React.Component {
 function UserLine(props){
     return(
         <p className="user-line">
-            <PieceImg className={props.turn ? "jumping" : ""} piece={props.color + "_king"}/>
+            <PieceImg className={props.turn ? "jumping" : ""} piece={props.piece}/>
             <span>{props.user.username}</span>
             <span>({props.user.category})</span>
         </p>
@@ -152,11 +152,33 @@ class ChessBoard extends React.Component {
     render(){
         return(
             <div className="board">
-                {this.props.board}
+                <table>
+                    <tbody>
+                        {this.props.board.split('/').map((line, column) => (
+                            <tr>
+                                {line.split('').map((piece, row) => {
+                                    const n = parseInt(piece);
+                                    if (n){
+                                        let blankSpaces = []
+                                        for(let i=0; i<n; i++)
+                                            blankSpaces.push(<td><button></button></td>);
+                                        return blankSpaces;
+                                    } else                                        
+                                        return (
+                                            <td>
+                                                <button><PieceImg piece={piece}/> </button>
+                                            </td>
+                                        );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                
             </div>
         );
     }
-    
+    //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 }
 
 export default GamePage;

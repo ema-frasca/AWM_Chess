@@ -304,10 +304,6 @@ select:hover {
   margin-left: 1vw;
 }
 
-.board {
-  clear: both;
-}
-
 .moves-list {
   width: 18%;
   float: left;
@@ -325,6 +321,28 @@ select:hover {
 .game-container {
   width: 80%;
   float: left;
+}
+
+.board {
+  clear: both;
+}
+
+.board table {
+  background-color: black;
+}
+
+.board td {
+  padding: 0vw;;
+}
+
+.board tr:nth-child(odd) td:nth-child(even), .board tr:nth-child(even) td:nth-child(odd) {
+  background-color: white;
+}
+
+.board button {
+  padding: 0vw;
+  background: none;
+  border: none;
 }
 
 @media only screen and (max-width: 768px) {

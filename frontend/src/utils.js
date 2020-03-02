@@ -32,9 +32,26 @@ class LoadingScreen extends React.Component {
     }
 }
 
+const piecesDict = {
+    x: "x",
+    k: "black_king",
+    q: "black_queen",
+    b: "black_bishop",
+    n: "black_knight",
+    r: "black_rook",
+    p: "black_pawn",
+    K: "white_king",
+    Q: "white_queen",
+    B: "white_bishop",
+    N: "white_knight",
+    R: "white_rook",
+    P: "white_pawn",
+}
+
 function PieceImg(props) {
     const className = "chess-piece " + props.className
-    return <img className={className} alt={props.piece} src={global.sprites + props.piece + ".png"} ></img>;
+    const src = global.sprites + piecesDict[props.piece] + ".png"
+    return <img className={className} alt={props.piece} src={src} ></img>;
 }
 
 function LoadingPage(props) {
