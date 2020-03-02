@@ -78,6 +78,14 @@ button:hover, .button:hover {
   cursor: pointer;
 }
 
+button[disabled], button:disabled {
+  background-color: rgba(80, 110, 120, 1);
+  color: #b7b7b7;
+  border-color: gray;
+  box-shadow: none;
+  cursor: auto;
+}
+
 a {
   color: black;
 }
@@ -122,7 +130,7 @@ img .icon {width: 3vw;}
 }
 
 #main-menu {
-  width: 25%;
+  width: 23%;
   float: left;
 }
 
@@ -132,7 +140,7 @@ img .icon {width: 3vw;}
   text-decoration: none;
   border: 0.5vw solid black;
   display: block;
-  width: 90%;
+  width: 100%;
   margin: 1vw 0vw;
   padding: 0vw 1vw;
 }
@@ -158,7 +166,7 @@ img .icon {width: 3vw;}
 }
 
 #content {
-  width: 75%;
+  width: 77%;
   float: left;
 }
 
@@ -247,6 +255,10 @@ select:hover {
   vertical-align: top;
 }
 
+.jumping {
+  animation: popping 2s ease 0s infinite;
+}
+
 .lobby-box {
   border: 0.4vw solid black;
   color: black;
@@ -283,6 +295,55 @@ select:hover {
   margin: 0.1vw 1vw;
 }
 
+.user-line {
+  float: left;
+}
+
+.user-line span:first-of-type {
+  font-weight: bold;
+  margin-left: 1vw;
+}
+
+.moves-list {
+  width: 18%;
+  float: left;
+  background-color: rgba(197, 197, 193, 0.5);
+  border: 0.3vw solid rgba(0, 0, 0, 0.8);
+  border-radius: 2vw;
+  margin: 0.5vw;
+}
+
+.moves-list h4, .moves-list h5{
+  padding: 0vw 0.5vw;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.game-container {
+  width: 80%;
+  float: left;
+}
+
+.board {
+  clear: both;
+}
+
+.board table {
+  background-color: black;
+}
+
+.board td {
+  padding: 0vw;;
+}
+
+.board tr:nth-child(odd) td:nth-child(even), .board tr:nth-child(even) td:nth-child(odd) {
+  background-color: white;
+}
+
+.board button {
+  padding: 0vw;
+  background: none;
+  border: none;
+}
 
 @media only screen and (max-width: 768px) {
   

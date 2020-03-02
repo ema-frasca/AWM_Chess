@@ -224,11 +224,11 @@ function ShowLobby(props) {
     if ("black" in props) {
         username = props.black.username;
         category = props.black.category;
-        colorIcon = <PieceImg piece="black_king"/>;
+        colorIcon = <PieceImg piece="k"/>;
     } else {
         username = props.white.username;
         category = props.white.category;
-        colorIcon = <PieceImg piece="white_king"/>;
+        colorIcon = <PieceImg piece="K"/>;
     }
     
     if (props.random === true) {
