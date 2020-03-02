@@ -33,7 +33,8 @@ class LoadingScreen extends React.Component {
 }
 
 function PieceImg(props) {
-    return <img className="chess-piece" alt={props.piece} src={global.sprites + props.piece + ".png"} ></img>;
+    const className = "chess-piece " + props.className
+    return <img className={className} alt={props.piece} src={global.sprites + props.piece + ".png"} ></img>;
 }
 
 function LoadingPage(props) {

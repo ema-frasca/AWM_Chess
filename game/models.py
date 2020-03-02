@@ -115,6 +115,18 @@ class Match(models.Model):
             return self.white
         return None
 
+    def pgn_list(self):
+        if self.pgn == '*':
+            return ['*']
+        from re import split as resplit
+        moves, result = self.pgn.rsplit(' ', 1)
+        mlist = resplit('\d+\.', moves)
+        mlist.remove('')
+        for i, move in enumerate(mlist, start=1):
+            mlist[i-1] = str(i) + '.' + move
+        mlist.append(result)
+        return mlist
+
     @classmethod
     def user_matches(cls, user, player=True):
         if player:
@@ -200,7 +212,7 @@ class EndedMatch(Match):
 
     def to_dict(self):
         match_dict = {
-            "pgn" : self.pgn,
+            "pgn" : self.pgn_list(),
             "black" : self.black.profile.to_dict(),
             "white" : self.white.profile.to_dict(),
             "reason" : self.end_reason,
@@ -252,7 +264,7 @@ class InMatch(Match):
 
     def to_dict(self):
         match_dict = {
-            "pgn" : self.pgn,
+            "pgn" : self.pgn_list(),
             "black" : self.black.profile.to_dict(),
             "white" :self.white.profile.to_dict(),
             "time" : self.get_times(),

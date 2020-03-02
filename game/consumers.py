@@ -194,7 +194,10 @@ class MainConsumer(JsonWebsocketConsumer):
         else:
             content["board"] = self.games[match.pk].board_fen()
             if match.user_has_turn(self.user):
-                content["moves"] = [move.uci() for move in self.games[match.pk].legal_moves]
+                moves = {move.uci()[:2]: [] for move in self.games[match.pk].legal_moves}
+                for move in self.games[match.pk].legal_moves:
+                    moves[move.uci()[:2]].append(move.uci()[2:])
+                content["moves"] =  moves
                 content["claim"] = self.games[match.pk].can_claim_draw()
             else:
                 content["moves"] = []
