@@ -33,7 +33,7 @@ class LoadingScreen extends React.Component {
 }
 
 const piecesDict = {
-    x: "x",
+    empty: "empty",
     k: "black_king",
     q: "black_queen",
     b: "black_bishop",

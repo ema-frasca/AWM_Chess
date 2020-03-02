@@ -161,7 +161,7 @@ class ChessBoard extends React.Component {
                                     if (n){
                                         let blankSpaces = []
                                         for(let i=0; i<n; i++)
-                                            blankSpaces.push(<td><button></button></td>);
+                                            blankSpaces.push(<td><button><PieceImg piece="empty"/></button></td>);
                                         return blankSpaces;
                                     } else                                        
                                         return (
