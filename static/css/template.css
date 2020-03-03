@@ -250,11 +250,6 @@ select:hover {
   background-color: white;
 }*/
 
-.chess-piece {
-  width: 3vw;
-  vertical-align: top;
-}
-
 .jumping {
   animation: popping 2s ease 0s infinite;
 }
@@ -321,6 +316,12 @@ select:hover {
 .game-container {
   width: 80%;
   float: left;
+  padding: 0vw 0.5vw;
+}
+
+.chess-piece {
+  width: 3vw;
+  vertical-align: top;
 }
 
 .board {
@@ -332,7 +333,8 @@ select:hover {
 }
 
 .board td {
-  padding: 0vw;;
+  padding: 0vw;
+  border: none;
 }
 
 .board tr:nth-child(odd) td:nth-child(even), .board tr:nth-child(even) td:nth-child(odd) {
@@ -341,8 +343,14 @@ select:hover {
 
 .board button {
   padding: 0vw;
+  margin: 0vw;
   background: none;
   border: none;
+  display: block;
+}
+
+.board .chess-piece {
+  width: 5vw;
 }
 
 @media only screen and (max-width: 768px) {
