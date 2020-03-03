@@ -49,7 +49,9 @@ const piecesDict = {
 }
 
 function PieceImg(props) {
-    const className = "chess-piece " + props.className
+    let className = "chess-piece ";
+    if (props.className)
+        className += props.className;
     const src = global.sprites + piecesDict[props.piece] + ".png"
     return <img className={className} alt={props.piece} src={src} ></img>;
 }

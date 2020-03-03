@@ -24,6 +24,7 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "matches-create", "f": self.create_lobby},
             {"type": "matches-delete", "f": self.delete_lobby},
             {"type": "game-page", "f": self.game_page},
+            {"type": "game-move", "f": self.game_move},            
         ]
         self.games = {}
         self.load_games()
@@ -194,9 +195,11 @@ class MainConsumer(JsonWebsocketConsumer):
         else:
             content["board"] = self.games[match.pk].board_fen()
             if match.user_has_turn(self.user):
-                moves = {move.uci()[:2]: [] for move in self.games[match.pk].legal_moves}
+                moves = {move.uci()[:2]: {} for move in self.games[match.pk].legal_moves}
                 for move in self.games[match.pk].legal_moves:
-                    moves[move.uci()[:2]].append(move.uci()[2:])
+                    moves[move.uci()[:2]][move.uci()[2:4]] = []
+                    if len(move.uci()) > 4:
+                        moves[move.uci()[:2]][move.uci()[2:4]].append(move.uci()[4])
                 content["moves"] =  moves
                 content["claim"] = self.games[match.pk].can_claim_draw()
             else:
@@ -204,3 +207,18 @@ class MainConsumer(JsonWebsocketConsumer):
                 content["claim"] = False
 
         self.send_json(content)
+
+    def game_move(self, msg):
+        match = InMatch.get_or_none(msg["id"])
+        if not match:
+            return
+        if not match.user_has_turn(self.user):
+            return
+        if msg["move"] not in [move.uci() for move in self.games[match.pk].legal_moves]:
+            return
+        
+        #time check
+
+        self.games[match.pk].push_uci(msg["move"])
+
+        self.game_page(msg)

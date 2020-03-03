@@ -61,7 +61,7 @@ function InGame(props){
         <div>
             <div className='game-container'>
                 <UserTime user={props.match.black} time={props.match.time.black} piece="k" turn={!props.match.whiteTurn}/>
-                <ChessBoard board={props.board} moves={props.moves}/>
+                <ChessBoard board={props.board} moves={props.moves} id={props.id}/>
                 <UserTime user={props.match.white} time={props.match.time.white} piece="K" turn={props.match.whiteTurn}/>
                 <ChessButtons id={props.id} claim={props.claim}/>
             </div>
@@ -110,7 +110,7 @@ class UserTime extends React.Component {
         return(
             <div>
                 <UserLine user={this.props.user} piece={this.props.piece} turn={this.props.turn}/>
-                <p style={{float:"right"}}>{time}</p>
+                <p className="user-time">{time}</p>
             </div>
         );
     }
@@ -147,6 +147,41 @@ function ChessButtons(props){
 class ChessBoard extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            selected : null,
+        };
+
+        this.columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    }
+
+    handleClick = (id) => {
+        if (this.state.selected && id in this.props.moves[this.state.selected]) {
+            // controllo promotion
+            global.wsSend({type: "game-move", move: this.state.selected + id, id: this.props.id})
+            this.setState({selected: null});    
+        }
+        else
+            this.setState({selected: id});    
+    }
+
+    buttonRender = (column, row, piece) => {
+        const id = column + row;
+        let enabled = (id in this.props.moves) ? true : false;
+        let className = "";
+
+        if (this.state.selected){
+            if (id in this.props.moves[this.state.selected]){
+                className = "target";
+                enabled = true;
+            }
+        }
+
+        return (
+            <td key={id}>
+                <button id={id} name={id} disabled={!enabled} className={className} onClick={() => this.handleClick(id)}><PieceImg piece={piece}/> </button>
+            </td>
+        );
     }
 
     render(){
@@ -154,21 +189,21 @@ class ChessBoard extends React.Component {
             <div className="board">
                 <table>
                     <tbody>
-                        {this.props.board.split('/').map((line, column) => (
-                            <tr>
-                                {line.split('').map((piece, row) => {
+                        <tr><th></th>{this.columns.map((c) => <th key={c}>{c}</th>)}</tr>
+                        {this.props.board.split('/').map((line, row, obj, offset=0) => (
+                            <tr key={row}>
+                                <th>{8 - row}</th>
+                                {line.split('').map((piece, column) => {
                                     const n = parseInt(piece);
                                     if (n){
-                                        let blankSpaces = []
-                                        for(let i=0; i<n; i++)
-                                            blankSpaces.push(<td><button><PieceImg piece="empty"/></button></td>);
+                                        let blankSpaces = [];
+                                        for(let i=0; i<n; i++, offset++){
+                                            blankSpaces.push(this.buttonRender(this.columns[column+offset], 8 - row, "empty"));
+                                        }
+                                        offset--;
                                         return blankSpaces;
                                     } else                                        
-                                        return (
-                                            <td>
-                                                <button><PieceImg piece={piece}/> </button>
-                                            </td>
-                                        );
+                                        return this.buttonRender(this.columns[column+offset], 8 - row, piece);
                                 })}
                             </tr>
                         ))}
@@ -178,7 +213,6 @@ class ChessBoard extends React.Component {
             </div>
         );
     }
-    //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 }
 
 export default GamePage;

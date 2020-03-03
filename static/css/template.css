@@ -299,6 +299,11 @@ select:hover {
   margin-left: 1vw;
 }
 
+.user-time {
+  float: right;
+  margin-right: 8vw;
+}
+
 .moves-list {
   width: 18%;
   float: left;
@@ -326,19 +331,27 @@ select:hover {
 
 .board {
   clear: both;
+  padding: 0vw 0.5vw;
 }
 
 .board table {
-  background-color: black;
+  background-color: white;
+  border-collapse: collapse;
 }
 
 .board td {
   padding: 0vw;
-  border: none;
+  border: 0.2vw solid black;
+}
+
+
+
+.board th {
+  padding: 0vw;
 }
 
 .board tr:nth-child(odd) td:nth-child(even), .board tr:nth-child(even) td:nth-child(odd) {
-  background-color: white;
+  background-color: black;
 }
 
 .board button {
@@ -349,8 +362,20 @@ select:hover {
   display: block;
 }
 
+.board button:hover:enabled {
+  background-color: rgba(128, 128, 128, 0.5);
+}
+
 .board .chess-piece {
   width: 5vw;
+}
+
+.board button.target {
+  background: radial-gradient(rgba(0, 0, 0, 0) 35%, rgb(100, 170, 40));
+}
+
+.board button.target:hover {
+  background: radial-gradient(rgba(0, 0, 0, 0) 10%, rgb(100, 170, 40));
 }
 
 @media only screen and (max-width: 768px) {
