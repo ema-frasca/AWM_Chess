@@ -2,7 +2,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from game.models import Match, Lobby, InMatch, EndedMatch, QuickMatch
 import chess, chess.pgn
-from io import StringIO
+from django.utils.timezone import now 
 
 
 class MainConsumer(JsonWebsocketConsumer):
@@ -38,6 +38,7 @@ class MainConsumer(JsonWebsocketConsumer):
                 r["f"](content)
         
     def load_games(self):
+        from io import StringIO
         matches = InMatch.user_matches(self.user)
         for match in matches:
             self.games[match.pk] = chess.pgn.read_game(StringIO(match.pgn), Visitor= chess.pgn.BoardBuilder)
@@ -222,6 +223,14 @@ class MainConsumer(JsonWebsocketConsumer):
 
         self.games[match.pk].push_uci(msg["move"])
 
-        # update db
+        # check end
+        match.white_turn = not match.white_turn
+        match.last_move = now()
+        match.pgn = chess.pgn.Game.from_board(self.games[match.pk]).accept(chess.pgn.StringExporter(headers=False, variations=False, comments=False))
+
+        match.save()
+
+        msg["type"] = "game.page"
+        self.message_opponent(match, msg)
 
         self.game_page(msg)
