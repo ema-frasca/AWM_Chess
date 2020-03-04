@@ -78,7 +78,7 @@ button:hover, .button:hover {
   cursor: pointer;
 }
 
-button[disabled], button:disabled {
+.button:disabled, button:disabled {
   background-color: rgba(80, 110, 120, 1);
   color: #b7b7b7;
   border-color: gray;
@@ -337,6 +337,7 @@ select:hover {
 .board table {
   background-color: white;
   border-collapse: collapse;
+  position: relative;
 }
 
 .board td {
@@ -376,6 +377,42 @@ select:hover {
 
 .board button.target:hover {
   background: radial-gradient(rgba(0, 0, 0, 0) 10%, rgb(100, 170, 40));
+}
+
+.promotion {
+  position: absolute;
+  height:100%;
+  top: 0vw;
+  width:100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  display: flex;
+}
+
+.promotion>form {
+  background-color: rgb(255, 255, 255);
+  color: black;
+  padding: 2vw;
+  border-radius: 3vw;
+  box-shadow: 0vw 3vw 6vw black;
+}
+
+.promotion>form label {
+  margin: 1vw;
+  display: inline-block;
+  text-align: center;
+}
+
+.promotion>form label:hover {
+  cursor: pointer;
+}
+
+.promotion>form label input {
+  display: block;
+  margin: 0vw auto;
 }
 
 @media only screen and (max-width: 768px) {

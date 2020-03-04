@@ -197,7 +197,8 @@ class MainConsumer(JsonWebsocketConsumer):
             if match.user_has_turn(self.user):
                 moves = {move.uci()[:2]: {} for move in self.games[match.pk].legal_moves}
                 for move in self.games[match.pk].legal_moves:
-                    moves[move.uci()[:2]][move.uci()[2:4]] = []
+                    if move.uci()[2:4] not in moves[move.uci()[:2]]:
+                        moves[move.uci()[:2]][move.uci()[2:4]] = []
                     if len(move.uci()) > 4:
                         moves[move.uci()[:2]][move.uci()[2:4]].append(move.uci()[4])
                 content["moves"] =  moves
@@ -220,5 +221,7 @@ class MainConsumer(JsonWebsocketConsumer):
         #time check
 
         self.games[match.pk].push_uci(msg["move"])
+
+        # update db
 
         self.game_page(msg)

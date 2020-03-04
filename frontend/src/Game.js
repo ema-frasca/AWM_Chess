@@ -61,7 +61,7 @@ function InGame(props){
         <div>
             <div className='game-container'>
                 <UserTime user={props.match.black} time={props.match.time.black} piece="k" turn={!props.match.whiteTurn}/>
-                <ChessBoard board={props.board} moves={props.moves} id={props.id}/>
+                <ChessBoard board={props.board} moves={props.moves} id={props.id} whiteTurn={props.match.whiteTurn}/>
                 <UserTime user={props.match.white} time={props.match.time.white} piece="K" turn={props.match.whiteTurn}/>
                 <ChessButtons id={props.id} claim={props.claim}/>
             </div>
@@ -135,34 +135,37 @@ function MovesList(props){
     );
 }
 
-function ChessButtons(props){
-    return(
-        <div style={{clear:"both"}}>
-            <button disabled={!props.claim} onClick={() => alert('Draw')}>Claim Draw</button>
-            <button onClick={() => alert('Resign')}>Resign</button>
-        </div>
-    );
-}
-
 class ChessBoard extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             selected : null,
+            promotion : null
         };
 
+        this.options = [ "q", "b", "n", "r"]
         this.columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
     }
 
     handleClick = (id) => {
         if (this.state.selected && id in this.props.moves[this.state.selected]) {
-            // controllo promotion
-            global.wsSend({type: "game-move", move: this.state.selected + id, id: this.props.id})
-            this.setState({selected: null});    
+            if (this.props.moves[this.state.selected][id].length){
+                this.setState({promotion: id});
+            }
+            else {
+                global.wsSend({type: "game-move", move: this.state.selected + id, id: this.props.id});
+                this.setState({selected: null});    
+            }
         }
         else
             this.setState({selected: id});    
+    }
+
+    promotionClick = (el) => {
+        if (el) 
+            global.wsSend({type: "game-move", move: this.state.selected + this.state.promotion + el, id: this.props.id});
+        this.setState({selected: null, promotion: null});
     }
 
     buttonRender = (column, row, piece) => {
@@ -189,7 +192,12 @@ class ChessBoard extends React.Component {
             <div className="board">
                 <table>
                     <tbody>
-                        <tr><th></th>{this.columns.map((c) => <th key={c}>{c}</th>)}</tr>
+                        <tr>
+                            <th>
+                                {this.state.promotion ? <OnPromotion options={this.options} onClick={this.promotionClick} whiteColor={this.props.whiteTurn}/> : null}  
+                            </th>
+                            {this.columns.map((c) => <th key={c}>{c}</th>)}
+                        </tr>
                         {this.props.board.split('/').map((line, row, obj, offset=0) => (
                             <tr key={row}>
                                 <th>{8 - row}</th>
@@ -209,7 +217,52 @@ class ChessBoard extends React.Component {
                         ))}
                     </tbody>
                 </table>
-                
+            </div>
+        );
+    }
+}
+
+function ChessButtons(props){
+    return(
+        <div style={{clear:"both"}}>
+            <button disabled={!props.claim} onClick={() => alert('Draw')}>Claim Draw</button>
+            <button onClick={() => alert('Resign')}>Resign</button>
+        </div>
+    );
+}
+
+class OnPromotion extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            selected : props.options[0],
+        }
+    }
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        this.props.onClick(this.state.selected);
+    }
+
+    render(){
+    return(
+            <div className="promotion">
+                <form onSubmit={this.handleSubmit}>
+                    {this.props.options.map((piece, i) => (
+                        <label key={i}>
+                            <PieceImg piece={this.props.whiteColor ? piece.toUpperCase() : piece}/>
+                            <input type="radio" name="promotion"
+                                value={piece}
+                                checked={this.state.selected === piece}
+                                onChange={(e) => this.setState({selected: e.target.value})}
+                            />
+                        </label>
+                    ))}
+                    <br />
+                    <input className="button" type="submit" value="confirm" />
+                    <input className="button" type="button" value="cancel" onClick={() => this.props.onClick(null) } />
+                </form>
             </div>
         );
     }
