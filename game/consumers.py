@@ -217,6 +217,11 @@ class MainConsumer(JsonWebsocketConsumer):
     def board_push(self, msg):
         self.games[msg["id"]].push_uci(msg["move"])
 
+    def update_game_view(self, match):
+        msg = {"type": "game.page", "id": match.pk}
+        self.message_opponent(match, msg)
+        self.game_page(msg)
+
     def game_move(self, msg):
         match = InMatch.get_or_none(msg["id"])
         if not match:
@@ -226,7 +231,7 @@ class MainConsumer(JsonWebsocketConsumer):
         if msg["move"] not in [move.uci() for move in self.games[match.pk].legal_moves]:
             return
         
-        #time check
+        # time check
 
         msg["type"] = "board.push"
         self.board_push(msg)
@@ -241,9 +246,9 @@ class MainConsumer(JsonWebsocketConsumer):
             self.game_end(match)
             return
 
-        msg["type"] = "game.page"
-        self.message_opponent(match, msg)
-        self.game_page(msg)
+        self.update_game_view(match)
+    
+    # check claim or resign function
 
     def game_end(self, match, time=False):
         reason = "resign"
@@ -266,6 +271,8 @@ class MainConsumer(JsonWebsocketConsumer):
                 reason = "threefold repetition claim"
 
         # oggetto in EndedGame, last_fen result e reason
-        msg = {"type": "game.page", "id": match.pk}
-        self.message_opponent(match, msg)
-        self.game_page(msg)
+        # remove board
+        # upgrade ranks
+        self.update_game_view(match)
+
+    # idea notifiche: attributo notification in match, chiamato ad ogni volta che c'è un cambiamento (game-page)
