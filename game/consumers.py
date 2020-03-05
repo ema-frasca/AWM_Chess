@@ -24,7 +24,7 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "matches-create", "f": self.create_lobby},
             {"type": "matches-delete", "f": self.delete_lobby},
             {"type": "game-page", "f": self.game_page},
-            {"type": "game-move", "f": self.game_move},            
+            {"type": "game-move", "f": self.game_move},        
         ]
         self.games = {}
         self.load_games()
@@ -159,6 +159,9 @@ class MainConsumer(JsonWebsocketConsumer):
             lobby.delete()
 
         self.get_my_lobby(msg)
+    
+    def create_board(self, msg):
+        self.games[msg["id"]] = chess.Board()
 
     def start_game(self, msg):
         lobby = Lobby.get_or_none(msg["id"])
@@ -167,7 +170,8 @@ class MainConsumer(JsonWebsocketConsumer):
         match = lobby.join_match(self.user)
         if match:
             self.message_opponent(match, {"type": "get.my.lobby", "quick": match.quick})
-            self.games[match.pk] = chess.Board()
+            self.create_board(msg)
+            self.message_opponent(match, {"type": "create.board", "id": match.pk})
         return match
 
     def game_page(self, msg):
@@ -210,6 +214,9 @@ class MainConsumer(JsonWebsocketConsumer):
 
         self.send_json(content)
 
+    def board_push(self, msg):
+        self.games[msg["id"]].push_uci(msg["move"])
+
     def game_move(self, msg):
         match = InMatch.get_or_none(msg["id"])
         if not match:
@@ -221,16 +228,44 @@ class MainConsumer(JsonWebsocketConsumer):
         
         #time check
 
-        self.games[match.pk].push_uci(msg["move"])
+        msg["type"] = "board.push"
+        self.board_push(msg)
+        self.message_opponent(match, msg)
 
-        # check end
         match.white_turn = not match.white_turn
         match.last_move = now()
         match.pgn = chess.pgn.Game.from_board(self.games[match.pk]).accept(chess.pgn.StringExporter(headers=False, variations=False, comments=False))
-
         match.save()
+
+        if self.games[match.pk].is_game_over():
+            self.game_end(match)
+            return
 
         msg["type"] = "game.page"
         self.message_opponent(match, msg)
+        self.game_page(msg)
 
+    def game_end(self, match, time=False):
+        reason = "resign"
+        if time:
+            reason = "time limit reached"
+        else:
+            if self.games[match.pk].is_checkmate():
+                reason = "checkmate"
+            elif self.games[match.pk].is_stalemate():
+                reason = "stalemate"
+            elif self.games[match.pk].is_insufficient_material():
+                reason = "insufficient pieces to checkmate"
+            elif self.games[match.pk].is_seventyfive_moves():
+                reason = "seventyfive moves"
+            elif self.games[match.pk].is_fivefold_repetition():
+                reason = "fivefold repetition"
+            elif self.games[match.pk].can_claim_fifty_moves():
+                reason = "fifty moves claim"
+            elif self.games[match.pk].can_claim_threefold_repetition():
+                reason = "threefold repetition claim"
+
+        # oggetto in EndedGame, last_fen result e reason
+        msg = {"type": "game.page", "id": match.pk}
+        self.message_opponent(match, msg)
         self.game_page(msg)

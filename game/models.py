@@ -215,6 +215,7 @@ class EndedMatch(Match):
             "pgn" : self.pgn_list(),
             "black" : self.black.profile.to_dict(),
             "white" : self.white.profile.to_dict(),
+            "result" : self.result,
             "reason" : self.end_reason,
         }
         return match_dict

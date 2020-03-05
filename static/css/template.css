@@ -301,11 +301,11 @@ select:hover {
 
 .user-time {
   float: right;
-  margin-right: 8vw;
+  margin-right: 1vw;
 }
 
 .moves-list {
-  width: 18%;
+  width: 25%;
   float: left;
   background-color: rgba(197, 197, 193, 0.5);
   border: 0.3vw solid rgba(0, 0, 0, 0.8);
@@ -319,7 +319,7 @@ select:hover {
 }
 
 .game-container {
-  width: 80%;
+  width: 72%;
   float: left;
   padding: 0vw 0.5vw;
 }
@@ -344,8 +344,6 @@ select:hover {
   padding: 0vw;
   border: 0.2vw solid black;
 }
-
-
 
 .board th {
   padding: 0vw;
@@ -413,6 +411,22 @@ select:hover {
 .promotion>form label input {
   display: block;
   margin: 0vw auto;
+}
+
+.result-line {
+  float: right;
+  margin-right: 1vw;
+}
+
+.zooming {
+  color: green;
+  animation: pop 2s ease 0s infinite;
+}
+
+@keyframes pop {
+  0%   {transform: scale(1);}
+  50%  {transform: scale(1.5);}
+  100% {transform: scale(1);}
 }
 
 @media only screen and (max-width: 768px) {

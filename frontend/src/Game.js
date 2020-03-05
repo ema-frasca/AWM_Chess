@@ -48,13 +48,45 @@ class Game extends React.Component {
 }
 
 function EndedGame(props){
+    let msgLines = {white: "", black: ""};
+    if (props.match.result === "White") {
+        msgLines = {white: "Winner", black: "Loser"};
+    } else if (props.match.result === "Black")
+        msgLines = {white: "Loser", black: "Winner"};
+    
     return(
         <div>
-
+        <div className='game-container'>
+            <UserResult user={props.match.black} result={msgLines.black} piece="k" turn={!props.match.whiteTurn}/>
+            <ChessBoard board={props.board} moves={{}} id={props.id} whiteTurn={false}/>
+            <UserResult user={props.match.white} result={msgLines.white} piece="K" turn={props.match.whiteTurn}/>
+        </div>
+        <MovesList pgn={props.match.pgn}/>
+        <ResultReason result={props.result} reason={props.match.reason} />
         </div>
     );
 }
 
+function UserResult(props) {
+    let className = "result-line"
+    if (props.result === "Winner")
+        className += " zooming"
+    return(
+        <div>
+            <UserLine user={this.props.user} piece={this.props.piece} turn={false}/>
+            <p className="result-line">{props.result}</p>
+        </div>
+    );
+}
+
+function ResultReason(props) {
+    return(
+        <div className="moves-list">
+            <h2>{props.result}</h2>
+            <h4>{props.reason}</h4>
+        </div>
+    );
+}
 
 function InGame(props){
     return(
@@ -66,7 +98,6 @@ function InGame(props){
                 <ChessButtons id={props.id} claim={props.claim}/>
             </div>
             <MovesList pgn={props.match.pgn}/>
-            {/*JSON.stringify(props)*/}
         </div>
     );
 }
@@ -130,7 +161,7 @@ function MovesList(props){
     return(
         <div className="moves-list">
             <h3>History</h3>
-                { props.pgn.map((turn, i) => <h4 key={i}>{turn}</h4>)}
+            {props.pgn.map((turn, i) => <h4 key={i}>{turn}</h4>)}
         </div>
     );
 }
