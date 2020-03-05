@@ -74,4 +74,8 @@ function removeWsListener(id) {
     global.wsOnMessage.delete(id)
 }
 
-export { LoadingScreen, LoadingPage, addWsListener, removeWsListener, PieceImg };
+function displayTime(minutes) {
+    return (parseInt(minutes/60)).toString().padStart(2, "0") + ":" +(minutes%60).toString().padStart(2, "0")
+}
+
+export { LoadingScreen, LoadingPage, addWsListener, removeWsListener, PieceImg, displayTime };

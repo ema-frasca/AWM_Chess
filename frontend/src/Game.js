@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { LoadingPage, addWsListener, removeWsListener, PieceImg } from "./utils"
+import { LoadingPage, addWsListener, removeWsListener, PieceImg, displayTime } from "./utils"
 
 function GamePage(){
     let { id } = useParams()
@@ -11,6 +11,7 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
 
+        this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
         this.gameRequest = {type: "game-page", f: this.getGame, reqId: null};
         this.id = parseInt(this.props.id)
 
@@ -22,6 +23,11 @@ class Game extends React.Component {
 
     componentDidMount() {
         this.gameRequest.reqId = addWsListener(this.gameRequest);
+        this.notificationListener.notId = addWsListener(this.notificationListener);
+        this.requestPage();
+    }
+
+    requestPage = () => {
         global.wsSend({type: this.gameRequest.type, id: this.id});
     }
 
@@ -30,8 +36,14 @@ class Game extends React.Component {
             this.setState({game: content, loading: false});
     }
 
+    onNotification = (content) => {
+        if (this.state.loading === false && content.id === this.id)
+            this.requestPage();
+    }
+
     componentWillUnmount() {
         removeWsListener(this.gameRequest.reqId);
+        removeWsListener(this.notificationListener.notId);
     }
 
     render() {
@@ -73,8 +85,8 @@ function UserResult(props) {
         className += " zooming"
     return(
         <div>
-            <UserLine user={this.props.user} piece={this.props.piece} turn={false}/>
-            <p className="result-line">{props.result}</p>
+            <UserLine user={props.user} piece={props.piece} turn={false}/>
+            <p className={className}>{props.result}</p>
         </div>
     );
 }
@@ -83,7 +95,7 @@ function ResultReason(props) {
     return(
         <div className="moves-list">
             <h2>{props.result}</h2>
-            <h4>{props.reason}</h4>
+            <h4>The match ended because of <b>{props.reason}</b></h4>
         </div>
     );
 }
@@ -137,7 +149,7 @@ class UserTime extends React.Component {
     }
 
     render() {
-        const time = (parseInt(this.state.time/60)).toString().padStart(2, "0") + ":" +(this.state.time%60).toString().padStart(2, "0");
+        const time = displayTime(this.state.time);
         return(
             <div>
                 <UserLine user={this.props.user} piece={this.props.piece} turn={this.props.turn}/>
@@ -161,7 +173,9 @@ function MovesList(props){
     return(
         <div className="moves-list">
             <h3>History</h3>
-            {props.pgn.map((turn, i) => <h4 key={i}>{turn}</h4>)}
+            <div>
+                {props.pgn.map((turn, i) => <h4 key={i}>{turn}</h4>)}
+            </div>
         </div>
     );
 }

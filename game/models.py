@@ -56,6 +56,10 @@ class Profile(models.Model):
             if self.rank <= limit:
                 return cat
         return "Unclassified"
+
+    def update_rank(self, distance, win=0, loss=0):
+        self.rank = self.rank + 16 * (win - loss + distance / 400)
+        self.save()
     
     def get_notifications(self):
         return 2
@@ -220,6 +224,14 @@ class EndedMatch(Match):
         }
         return match_dict
 
+    def to_home_dict(self, user):
+        match_dict = {
+            "id" : self.pk,
+            "vs" : self.versus(user).username,
+            "result" : self.user_result(user),
+        }
+        return match_dict
+
     def user_result(self, user):
         if self.result == "Draw":
             return self.result
@@ -272,6 +284,19 @@ class InMatch(Match):
             "whiteTurn" : self.white_turn,
         }
         return match_dict
+
+    def to_home_dict(self, user):
+        match_dict = {
+            "id" : self.pk,
+            "vs" : self.versus(user).profile.to_dict(),
+            "time" : (self.get_times()["white"] if self.white_turn else self.get_times()["black"]),
+            "turn" : self.user_has_turn(user)
+        }
+        return match_dict
+
+    @classmethod
+    def user_turn_matches(cls, user):
+        return cls.objects.filter((models.Q(white=user), models.Q(white_turn=True)) | (models.Q(black=user), models.Q(white_turn=False)))
 
 class QuickMatch(InMatch):
     # counters initialized at 0 seconds

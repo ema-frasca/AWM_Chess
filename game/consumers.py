@@ -14,6 +14,7 @@ class MainConsumer(JsonWebsocketConsumer):
         self.accept()
         async_to_sync(self.channel_layer.group_add)(str(self.user.id), self.channel_name)
         self.requests = [
+            {"type": "notifications", "f": self.get_notifications},
             {"type": "home-page", "f": self.home_page},
             {"type": "account-page", "f": self.account_page},
             {"type": "account-edit", "f": self.account_edit},
@@ -47,11 +48,32 @@ class MainConsumer(JsonWebsocketConsumer):
         opponent = match.versus(self.user)
         async_to_sync(self.channel_layer.group_send)(str(opponent.id), msg)
 
+    def message_myself(self, msg):
+        async_to_sync(self.channel_layer.group_send)(str(self.user.id), msg)
+
+    def get_notifications(self, msg):
+        matches = [match.pk for match in InMatch.user_turn_matches(self.user)]
+        content = {
+            "type" : "notifications",
+            "number" : matches.count(),
+            "games-id" : matches,
+        }
+        self.send_json(content)
+
+    def notify(self, msg):
+        self.send_json(msg)
+
+    def match_notify(self, match):
+        msg = {"type": "notify", "id": match.pk}
+        self.message_myself(msg)
+        self.message_opponent(match, msg)
+
     def home_page(self, msg=None):
-        matches = InMatch.user_matches(self.user)
         content = {
             "type" : "home-page",
-            "list" : [match.pk for match in matches]
+            "list" : [match.to_home_dict(self.user) for match in InMatch.user_matches(self.user)],
+            "username" : self.user.username,
+            "history" : [match.to_home_dict(self.user) for match in EndedMatch.user_matches(self.user)],
         }
         self.send_json(content)
 
@@ -215,12 +237,11 @@ class MainConsumer(JsonWebsocketConsumer):
         self.send_json(content)
 
     def board_push(self, msg):
+        print(self.user.username + " " + msg["move"] + " " + self.games[msg["id"]].fen() + "\n\n")
         self.games[msg["id"]].push_uci(msg["move"])
 
-    def update_game_view(self, match):
-        msg = {"type": "game.page", "id": match.pk}
-        self.message_opponent(match, msg)
-        self.game_page(msg)
+    def board_delete(self, msg):
+        self.games.pop(msg["id"])
 
     def game_move(self, msg):
         match = InMatch.get_or_none(msg["id"])
@@ -234,7 +255,7 @@ class MainConsumer(JsonWebsocketConsumer):
         # time check
 
         msg["type"] = "board.push"
-        self.board_push(msg)
+        self.message_myself(msg)
         self.message_opponent(match, msg)
 
         match.white_turn = not match.white_turn
@@ -246,17 +267,28 @@ class MainConsumer(JsonWebsocketConsumer):
             self.game_end(match)
             return
 
-        self.update_game_view(match)
+        self.match_notify(match)
     
     # check claim or resign function
 
-    def game_end(self, match, time=False):
-        reason = "resign"
+    def game_end(self, match, time=False, resign=False, claim=False):
+        reason = ""
+        result = "Draw"
         if time:
             reason = "time limit reached"
+            result = ("Black" if match.white_turn else "White")
+        elif resign:
+            reason = "resign"
+            result = ("Black" if self.user == match.white else "White")
+        elif claim:
+            if self.games[match.pk].can_claim_fifty_moves():
+                reason = "fifty moves claim"
+            elif self.games[match.pk].can_claim_threefold_repetition():
+                reason = "threefold repetition claim"
         else:
             if self.games[match.pk].is_checkmate():
                 reason = "checkmate"
+                result = ("Black" if match.white_turn else "White")
             elif self.games[match.pk].is_stalemate():
                 reason = "stalemate"
             elif self.games[match.pk].is_insufficient_material():
@@ -265,14 +297,29 @@ class MainConsumer(JsonWebsocketConsumer):
                 reason = "seventyfive moves"
             elif self.games[match.pk].is_fivefold_repetition():
                 reason = "fivefold repetition"
-            elif self.games[match.pk].can_claim_fifty_moves():
-                reason = "fifty moves claim"
-            elif self.games[match.pk].can_claim_threefold_repetition():
-                reason = "threefold repetition claim"
+            
+        match = match.end()
+        match.last_fen = self.games[match.pk].board_fen()
+        match.end_reason = reason
+        match.result = result
+        match.save()
+        
+        msg = {"type": "board.delete", "id": match.pk}
+        self.board_delete(msg)
+        self.message_opponent(match, msg)
 
-        # oggetto in EndedGame, last_fen result e reason
-        # remove board
-        # upgrade ranks
-        self.update_game_view(match)
+        distance = match.white.profile.rank - match.black.profile.rank
+        if result == "White":
+            match.white.profile.update_rank(-distance, win=1)
+            match.black.profile.update_rank(distance, loss=1)
+        elif result == "Black":
+            match.black.profile.update_rank(distance, win=1)
+            match.white.profile.update_rank(-distance, loss=1)
+        else:
+            match.black.profile.update_rank(distance)
+            match.white.profile.update_rank(-distance)
+
+        self.match_notify(match)
 
     # idea notifiche: attributo notification in match, chiamato ad ogni volta che c'è un cambiamento (game-page)
+    # list-moves max height (half the board) e scrollable

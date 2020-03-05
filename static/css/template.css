@@ -283,11 +283,18 @@ select:hover {
 
 .lobby-box span:last-child {
   margin: 0vw 3vw;
+  float: right;
   font-style: oblique;
 }
 
 .lobby-box+button {
   margin: 0.1vw 1vw;
+}
+
+.lobby-box b {
+  margin: 0vw 2.5vw;
+  animation: pop 2s ease 0s infinite;
+  display: inline-block;
 }
 
 .user-line {
@@ -311,6 +318,16 @@ select:hover {
   border: 0.3vw solid rgba(0, 0, 0, 0.8);
   border-radius: 2vw;
   margin: 0.5vw;
+}
+
+.moves-list > div {
+  max-height: 25vw;
+  overflow-y: auto;
+  -ms-overflow-style: none; /*hide the scrollbar in edge and ie*/
+}
+
+.moves-list > div::-webkit-scrollbar { /*hide the scrollbar in crhome, safari and opera*/
+  display: none;
 }
 
 .moves-list h4, .moves-list h5{
@@ -415,6 +432,7 @@ select:hover {
 
 .result-line {
   float: right;
+  font-weight: bold;
   margin-right: 1vw;
 }
 
