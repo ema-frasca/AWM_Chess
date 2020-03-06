@@ -11,7 +11,7 @@ import LobbyPage from "./Lobby";
 import AccountPage from "./Account";
 import GamePage from "./Game";
 
-import { LoadingScreen } from "./utils";
+import { LoadingScreen, addWsListener, removeWsListener } from "./utils";
 
 
 const menuLines = [
@@ -75,11 +75,41 @@ function MenuLine(props) {
 class NotificationPop extends React.Component {
     constructor(props) {
         super(props);
+
+        this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
+        this.notificationRequest = {type: "notifications", f: this.getNotification, reqId: null};
+
+        this.state = {
+            notifications: 0
+        };
+    }
+
+    componentDidMount() {
+        this.notificationRequest.reqId = addWsListener(this.notificationRequest);
+        this.notificationListener.notId = addWsListener(this.notificationListener);
+        this.requestPage();
+    }
+
+    requestPage = () => {
+        global.wsSend({type: this.notificationRequest.type});
+    }
+
+    getNotification = (content) => {
+        this.setState({notifications: content.number});
+    }
+
+    onNotification = (content) => {
+        this.requestPage();
+    }
+    
+    componentWillUnmount() {
+        removeWsListener(this.notificationRequest.reqId);
+        removeWsListener(this.notificationListener.notId);
     }
 
     render() {
         return (
-            <span id="notification">2</span>
+            <span id="notification">{this.state.notifications ? this.state.notifications : null}</span>
         );
     }
 }

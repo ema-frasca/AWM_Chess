@@ -6,6 +6,7 @@ class HomePage extends React.Component {
     constructor(props) {
         super(props);
 
+        this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
         this.homeRequest = {type: "home-page", f: this.getHome, reqId: null};
 
         this.state = {
@@ -18,6 +19,11 @@ class HomePage extends React.Component {
 
     componentDidMount() {
         this.homeRequest.reqId = addWsListener(this.homeRequest);
+        this.notificationListener.notId = addWsListener(this.notificationListener);
+        this.requestPage();
+    }
+
+    requestPage = () => {
         global.wsSend({type: this.homeRequest.type});
     }
 
@@ -25,8 +31,13 @@ class HomePage extends React.Component {
         this.setState({list: content.list, history: content.history, user: content.username, loading: false});
     }
 
+    onNotification = (content) => {
+        this.requestPage();
+    }
+    
     componentWillUnmount() {
         removeWsListener(this.homeRequest.reqId);
+        removeWsListener(this.notificationListener.notId);
     }
 
     render() {

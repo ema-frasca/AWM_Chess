@@ -37,7 +37,7 @@ class Game extends React.Component {
     }
 
     onNotification = (content) => {
-        if (this.state.loading === false && content.id === this.id)
+        if (content.id === this.id)
             this.requestPage();
     }
 
@@ -174,7 +174,7 @@ function MovesList(props){
         <div className="moves-list">
             <h3>History</h3>
             <div>
-                {props.pgn.map((turn, i) => <h4 key={i}>{turn}</h4>)}
+                {props.pgn.map((turn, i) => <h5 key={i}>{turn}</h5>)}
             </div>
         </div>
     );
@@ -270,8 +270,8 @@ class ChessBoard extends React.Component {
 function ChessButtons(props){
     return(
         <div style={{clear:"both"}}>
-            <button disabled={!props.claim} onClick={() => alert('Draw')}>Claim Draw</button>
-            <button onClick={() => alert('Resign')}>Resign</button>
+            <button disabled={!props.claim} onClick={() => global.wsSend({type: "game-claim", id: props.id})}>Claim Draw</button>
+            <button onClick={() => global.wsSend({type: "game-resign", id: props.id})}>Resign</button>
         </div>
     );
 }

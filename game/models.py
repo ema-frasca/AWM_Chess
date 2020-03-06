@@ -120,8 +120,8 @@ class Match(models.Model):
         return None
 
     def pgn_list(self):
-        if self.pgn == '*':
-            return ['*']
+        if self.pgn.startswith("*"):
+            return [self.pgn]
         from re import split as resplit
         moves, result = self.pgn.rsplit(' ', 1)
         mlist = resplit('\d+\.', moves)
@@ -152,19 +152,17 @@ class Lobby(Match):
     random_color = models.BooleanField(default=False)
 
     def join_match(self, user):
-        # Check if user can join
         if self.has_user(user) or user.profile.left_matches(self.quick) == 0 :
             return None
 
-        # Join the user
         if self.random_color:
             from random import randint
             if randint(0, 1):
                 self.black = self.white
-        if self.white:
-            self.black = user
-        else:
+        if self.black:
             self.white = user
+        else:
+            self.black = user
         self.save()
 
         return self.start()
@@ -296,7 +294,7 @@ class InMatch(Match):
 
     @classmethod
     def user_turn_matches(cls, user):
-        return cls.objects.filter((models.Q(white=user), models.Q(white_turn=True)) | (models.Q(black=user), models.Q(white_turn=False)))
+        return cls.objects.filter((models.Q(white=user, white_turn=True)) | (models.Q(black=user, white_turn=False)))
 
 class QuickMatch(InMatch):
     # counters initialized at 0 seconds

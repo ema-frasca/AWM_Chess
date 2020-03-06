@@ -25,10 +25,13 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "matches-create", "f": self.create_lobby},
             {"type": "matches-delete", "f": self.delete_lobby},
             {"type": "game-page", "f": self.game_page},
-            {"type": "game-move", "f": self.game_move},        
+            {"type": "game-move", "f": self.game_move},     
+            {"type": "game-resign", "f": self.game_resign},      
+            {"type": "game-claim", "f": self.game_claim},         
         ]
         self.games = {}
         self.load_games()
+        self.times_check()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(str(self.user.id), self.channel_name)
@@ -46,16 +49,18 @@ class MainConsumer(JsonWebsocketConsumer):
 
     def message_opponent(self, match, msg):
         opponent = match.versus(self.user)
+        msg["sender"] = self.channel_name   
         async_to_sync(self.channel_layer.group_send)(str(opponent.id), msg)
 
     def message_myself(self, msg):
+        msg["sender"] = self.channel_name   
         async_to_sync(self.channel_layer.group_send)(str(self.user.id), msg)
 
     def get_notifications(self, msg):
         matches = [match.pk for match in InMatch.user_turn_matches(self.user)]
         content = {
             "type" : "notifications",
-            "number" : matches.count(),
+            "number" : len(matches),
             "games-id" : matches,
         }
         self.send_json(content)
@@ -69,11 +74,12 @@ class MainConsumer(JsonWebsocketConsumer):
         self.message_opponent(match, msg)
 
     def home_page(self, msg=None):
+        self.times_check()
         content = {
             "type" : "home-page",
             "list" : [match.to_home_dict(self.user) for match in InMatch.user_matches(self.user)],
             "username" : self.user.username,
-            "history" : [match.to_home_dict(self.user) for match in EndedMatch.user_matches(self.user)],
+            "history" : [match.to_home_dict(self.user) for match in EndedMatch.user_matches(self.user).order_by("-pk")],
         }
         self.send_json(content)
 
@@ -194,6 +200,8 @@ class MainConsumer(JsonWebsocketConsumer):
             self.message_opponent(match, {"type": "get.my.lobby", "quick": match.quick})
             self.create_board(msg)
             self.message_opponent(match, {"type": "create.board", "id": match.pk})
+        
+        self.match_notify(match)
         return match
 
     def game_page(self, msg):
@@ -207,12 +215,12 @@ class MainConsumer(JsonWebsocketConsumer):
                 if not match:
                     content["error"] = "The selected game doesn't exist anymore"
                     self.send_json(content)
-                    return
+                return
         elif match.quick:
             match = QuickMatch.objects.get(pk=match.pk)
 
         if not match.has_user(self.user):
-            return None
+            return
             
         content["match"] = match.to_dict()
 
@@ -220,6 +228,8 @@ class MainConsumer(JsonWebsocketConsumer):
             content["board"] = match.last_fen
             content["result"] = match.user_result(self.user)
         else:
+            if not self.times_check(match):
+                return
             content["board"] = self.games[match.pk].board_fen()
             if match.user_has_turn(self.user):
                 moves = {move.uci()[:2]: {} for move in self.games[match.pk].legal_moves}
@@ -237,26 +247,46 @@ class MainConsumer(JsonWebsocketConsumer):
         self.send_json(content)
 
     def board_push(self, msg):
-        print(self.user.username + " " + msg["move"] + " " + self.games[msg["id"]].fen() + "\n\n")
-        self.games[msg["id"]].push_uci(msg["move"])
+        if msg["sender"] != self.channel_name:
+            self.games[msg["id"]].push_uci(msg["move"])
 
     def board_delete(self, msg):
         self.games.pop(msg["id"])
 
+    def times_check(self, match=None):
+        matches = ([match] if match else InMatch.user_matches(self.user))
+        flag = True
+        for match in matches:
+            times = match.get_times()
+            if times["white"] <= 0 or times["black"] <= 0:
+                self.game_end(match, time=True)
+                flag = False
+        return flag
+        
+    def game_check(self, id, move):
+        match = InMatch.get_or_none(id)
+        if not match:
+            return None
+        if not self.times_check(match):
+            return None
+        if move == "resign":
+            return (match if match.has_user(self.user) else None)
+        if not match.user_has_turn(self.user):
+            return None
+        if move == "claim":
+            return (match if self.games[match.pk].can_claim_draw() else None)
+
+        return (match if move in [move.uci() for move in self.games[match.pk].legal_moves] else None)
+
     def game_move(self, msg):
-        match = InMatch.get_or_none(msg["id"])
+        match = self.game_check(msg["id"], msg["move"])
         if not match:
             return
-        if not match.user_has_turn(self.user):
-            return
-        if msg["move"] not in [move.uci() for move in self.games[match.pk].legal_moves]:
-            return
-        
-        # time check
 
         msg["type"] = "board.push"
-        self.message_myself(msg)
         self.message_opponent(match, msg)
+        self.message_myself(msg)
+        self.games[msg["id"]].push_uci(msg["move"])
 
         match.white_turn = not match.white_turn
         match.last_move = now()
@@ -269,7 +299,24 @@ class MainConsumer(JsonWebsocketConsumer):
 
         self.match_notify(match)
     
-    # check claim or resign function
+    def game_resign(self, msg):
+        match = self.game_check(msg["id"], "resign")
+        if not match:
+            return
+        match.pgn += " resign"
+        match.save()
+
+        self.game_end(match, resign=True)
+
+
+    def game_claim(self, msg):
+        match = self.game_check(msg["id"], "claim")
+        if not match:
+            return
+        match.pgn += " draw claim"
+        match.save()
+        
+        self.game_end(match, claim=True)
 
     def game_end(self, match, time=False, resign=False, claim=False):
         reason = ""
@@ -305,7 +352,7 @@ class MainConsumer(JsonWebsocketConsumer):
         match.save()
         
         msg = {"type": "board.delete", "id": match.pk}
-        self.board_delete(msg)
+        self.message_myself(msg)
         self.message_opponent(match, msg)
 
         distance = match.white.profile.rank - match.black.profile.rank
@@ -320,6 +367,3 @@ class MainConsumer(JsonWebsocketConsumer):
             match.white.profile.update_rank(-distance)
 
         self.match_notify(match)
-
-    # idea notifiche: attributo notification in match, chiamato ad ogni volta che c'è un cambiamento (game-page)
-    # list-moves max height (half the board) e scrollable
