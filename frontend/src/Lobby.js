@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { LoadingPage, addWsListener, removeWsListener, PieceImg } from "./utils";
 
 
@@ -11,6 +11,7 @@ class LobbyPage extends React.Component {
 
         this.state = {
             leftMatches: null,
+            redirectId: null,
             loading: true
         };
     }
@@ -22,7 +23,7 @@ class LobbyPage extends React.Component {
 
     getLeftMatches = (content) => {
         if (content.quick === this.props.quick)
-            this.setState({leftMatches: content.number, loading: false});
+            this.setState({leftMatches: content.number, redirectId: content.redirect, loading: false});
     }
 
     componentWillUnmount() {
@@ -33,7 +34,8 @@ class LobbyPage extends React.Component {
         if (this.state.loading)
             return <LoadingPage loading={true}/>;
         const quick = this.props.quick 
-        //if (quick && this.state.leftMatches === 0) redirect ATTT
+        if (quick && this.state.leftMatches === 0 && this.state.redirectId)
+            return <Redirect to={"/game/" + this.state.redirectId} />
         return (
             <div>
                 {this.state.leftMatches ? <Lobbies quick={quick} /> : <CapReach quick={quick} />}
@@ -218,7 +220,6 @@ function ShowMyLobby(props) {
 }
 
 function ShowLobby(props) {
-    // props: {"id":16,"random":true,"quick":false,"time":720,"white":"semgay","category":"Novice"}
     let username, category, colorIcon = null, piecesText =  null;
 
     if ("black" in props) {

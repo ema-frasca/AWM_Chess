@@ -27,11 +27,13 @@ class MainConsumer(JsonWebsocketConsumer):
             {"type": "game-page", "f": self.game_page},
             {"type": "game-move", "f": self.game_move},     
             {"type": "game-resign", "f": self.game_resign},      
-            {"type": "game-claim", "f": self.game_claim},         
+            {"type": "game-claim", "f": self.game_claim},  
+            {"type": "times-check", "f": self.times_check},               
         ]
         self.games = {}
         self.load_games()
         self.times_check()
+        self.notify({"type": "notify"})
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(str(self.user.id), self.channel_name)
@@ -74,7 +76,8 @@ class MainConsumer(JsonWebsocketConsumer):
         self.message_opponent(match, msg)
 
     def home_page(self, msg=None):
-        self.times_check()
+        if not self.times_check():
+            return
         content = {
             "type" : "home-page",
             "list" : [match.to_home_dict(self.user) for match in InMatch.user_matches(self.user)],
@@ -148,6 +151,8 @@ class MainConsumer(JsonWebsocketConsumer):
         content = msg
         content["type"] = "matches-left"
         content["number"] = self.user.profile.left_matches(msg["quick"])
+        quick = QuickMatch.user_matches(self.user).first()
+        content["redirect"] = (quick.pk if quick else None)
         
         self.send_json(content)
     
@@ -228,7 +233,7 @@ class MainConsumer(JsonWebsocketConsumer):
             content["board"] = match.last_fen
             content["result"] = match.user_result(self.user)
         else:
-            if not self.times_check(match):
+            if not self.times_check({"match": match}):
                 return
             content["board"] = self.games[match.pk].board_fen()
             if match.user_has_turn(self.user):
@@ -253,8 +258,8 @@ class MainConsumer(JsonWebsocketConsumer):
     def board_delete(self, msg):
         self.games.pop(msg["id"])
 
-    def times_check(self, match=None):
-        matches = ([match] if match else InMatch.user_matches(self.user))
+    def times_check(self, msg={}):
+        matches = ([msg["match"]] if "match" in msg else InMatch.user_matches(self.user))
         flag = True
         for match in matches:
             times = match.get_times()
@@ -267,7 +272,7 @@ class MainConsumer(JsonWebsocketConsumer):
         match = InMatch.get_or_none(id)
         if not match:
             return None
-        if not self.times_check(match):
+        if not self.times_check({"match": match}):
             return None
         if move == "resign":
             return (match if match.has_user(self.user) else None)

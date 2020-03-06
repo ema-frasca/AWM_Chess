@@ -78,4 +78,42 @@ function displayTime(minutes) {
     return (parseInt(minutes/60)).toString().padStart(2, "0") + ":" +(minutes%60).toString().padStart(2, "0")
 }
 
-export { LoadingScreen, LoadingPage, addWsListener, removeWsListener, PieceImg, displayTime };
+class TimerDisplay extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            time : props.time,
+        };
+
+        this.timer = null;
+    }
+
+    componentDidMount() {
+        this.timer = setInterval(this.tick, 60000);
+    }
+
+    componentDidUpdate(oldProps) {
+        if (oldProps.updateTime !== this.props.updateTime)
+            this.setState({time: this.props.time});
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer);
+        
+    }
+
+    tick = () => {
+        const time = this.state.time - 1;
+        this.setState({time: time});
+    }
+
+    render() {
+        const time = Math.max(0, this.state.time)
+        if (time === 0)
+            global.wsSend({"type": "times-check"});
+        return <span>{displayTime(time)}</span>;
+    }
+}
+
+export { LoadingScreen, LoadingPage, addWsListener, removeWsListener, PieceImg, displayTime, TimerDisplay };

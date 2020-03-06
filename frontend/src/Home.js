@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LoadingPage, addWsListener, removeWsListener, displayTime } from "./utils";
+import { LoadingPage, addWsListener, removeWsListener, TimerDisplay } from "./utils";
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -70,7 +70,8 @@ function ShowMatchLink(props){
 function InMatchLine(props){
     return(
         <div className="lobby-box">
-            <p>vs <span>{props.vs.username}</span><span>({props.vs.category})</span>{props.turn ? <b>Your turn</b> : null}<span>{displayTime(props.time)}</span></p>
+            <p>vs <span>{props.vs.username}</span><span>({props.vs.category})</span>
+            {props.turn ? <b>Your turn</b> : null}<TimerDisplay time={props.time} updateTime={(new Date()).getTime()} /></p>
         </div>
     );
 }

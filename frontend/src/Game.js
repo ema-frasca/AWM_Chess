@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { LoadingPage, addWsListener, removeWsListener, PieceImg, displayTime } from "./utils"
+import { LoadingPage, addWsListener, removeWsListener, PieceImg, displayTime, TimerDisplay } from "./utils"
 
 function GamePage(){
     let { id } = useParams()
@@ -114,49 +114,13 @@ function InGame(props){
     );
 }
 
-class UserTime extends React.Component {
-    constructor(props) {
-        super(props);
-        
-        this.state = {
-            time : props.time,
-        };
-
-        this.timer = null;
-    }
-
-    componentDidMount() {
-        this.componentDidUpdate({turn: false, time: this.props.time});
-    }
-
-    componentDidUpdate(oldProps) {
-        if (this.props.turn !== oldProps.turn) {
-            this.setState({time: this.props.time})
-            if (this.props.turn)
-                this.timer = setInterval(this.tick, 60000);
-            else 
-                clearInterval(this.timer);
-        }
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timer);
-    }
-
-    tick = () => {
-        const time = this.state.time - 1;
-        this.setState({time: time});
-    }
-
-    render() {
-        const time = displayTime(this.state.time);
-        return(
-            <div>
-                <UserLine user={this.props.user} piece={this.props.piece} turn={this.props.turn}/>
-                <p className="user-time">{time}</p>
-            </div>
-        );
-    }
+function UserTime(props) {
+    return(
+        <div>
+            <UserLine user={props.user} piece={props.piece} turn={props.turn}/>
+            <p className="user-time">{props.turn ? <TimerDisplay time={props.time} /> : displayTime(props.time)}</p>
+        </div>
+    );
 }
 
 function UserLine(props){

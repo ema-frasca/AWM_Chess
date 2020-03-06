@@ -262,6 +262,8 @@ class InMatch(Match):
             return user == self.black
 
     def get_times(self):
+        if (self.quick):
+            return self.quickmatch.get_times()
         if self.white_turn:
             return {
                 "black" : minutes(self.chosen_time),
