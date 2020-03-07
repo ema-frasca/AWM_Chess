@@ -272,6 +272,8 @@ class MainConsumer(JsonWebsocketConsumer):
         match = InMatch.get_or_none(id)
         if not match:
             return None
+        if match.quick:
+            match = match.quickmatch
         if not self.times_check({"match": match}):
             return None
         if move == "resign":
@@ -292,7 +294,12 @@ class MainConsumer(JsonWebsocketConsumer):
         self.message_opponent(match, msg)
         self.message_myself(msg)
         self.games[msg["id"]].push_uci(msg["move"])
-
+        
+        if match.quick:
+            if match.white_turn:
+                match.white_time += now() - match.last_move
+            else:
+                match.black_time += now() - match.last_move
         match.white_turn = not match.white_turn
         match.last_move = now()
         match.pgn = chess.pgn.Game.from_board(self.games[match.pk]).accept(chess.pgn.StringExporter(headers=False, variations=False, comments=False))
