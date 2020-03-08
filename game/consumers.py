@@ -82,7 +82,7 @@ class MainConsumer(JsonWebsocketConsumer):
             "type" : "home-page",
             "list" : [match.to_home_dict(self.user) for match in InMatch.user_matches(self.user)],
             "username" : self.user.username,
-            "history" : [match.to_home_dict(self.user) for match in EndedMatch.user_matches(self.user).order_by("-pk")],
+            "history" : [match.to_home_dict(self.user) for match in EndedMatch.user_matches(self.user).order_by("-end_date")[:5]],
         }
         self.send_json(content)
 

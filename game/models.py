@@ -211,6 +211,7 @@ class EndedMatch(Match):
     result = models.CharField(max_length=10, default="*")
     last_fen = models.CharField(max_length=70, default="")
     end_reason = models.CharField(max_length=50, default="")
+    end_date = models.DateTimeField(default=now)
 
     def to_dict(self):
         match_dict = {
