@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import { Animated } from 'react-native';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import * as Font from 'expo-font';
 
+loadFont();
 
 const styles = {
   loadingSocket: {
@@ -30,7 +32,7 @@ const styles = {
     },
     text: {
       fontSize: RFPercentage(8),
-      fontWeight: 'bold'
+      fontFamily: 'comic-sans-bold'
     }
   }
 
@@ -47,6 +49,21 @@ const FadeInView = (props) => {
     </Animated.View>
   );
 }
+
+async function loadFont() {
+  try {
+      await Font.loadAsync({
+          'comic-sans': require('../assets/fonts/comic-sans-ms.ttf'),
+          'comic-sans-bold': require('../assets/fonts/comic-sans-ms-bold.ttf')
+      });
+  }
+  catch (err) {
+  }
+  finally{
+      return;
+  }
+}
+
 
 export default styles;
 export { FadeInView };
