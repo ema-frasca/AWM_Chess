@@ -379,3 +379,14 @@ class MainConsumer(JsonWebsocketConsumer):
             match.white.profile.update_rank(-distance)
 
         self.match_notify(match)
+
+
+class MobileConsumer(MainConsumer):
+    def connect(self):
+        self.accept()
+
+    def receive_json(self, content):
+        pass
+
+    def disconnect(self, close_code):
+        pass
