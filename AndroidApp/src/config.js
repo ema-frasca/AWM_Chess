@@ -14,6 +14,7 @@ global.wsOnStateChange = [];
 global.wsOnMessage = new Map();
 
 let timeout = 250;
+
 connect();
 
 function changeWS(ws) {
