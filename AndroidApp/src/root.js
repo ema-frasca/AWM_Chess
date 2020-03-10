@@ -2,7 +2,6 @@ import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage  } from 'react-native'
 import { imgs, LoadingPage } from './utils'
 import styles from './styles'
-import { loadFont } from './config'
 
 class Root extends React.Component {
     constructor(props) {
