@@ -2,7 +2,8 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from game.models import Match, Lobby, InMatch, EndedMatch, QuickMatch
 import chess, chess.pgn
-from django.utils.timezone import now 
+from django.utils.timezone import now
+import jwt
 
 
 class MainConsumer(JsonWebsocketConsumer):
@@ -12,6 +13,9 @@ class MainConsumer(JsonWebsocketConsumer):
         if not self.user.is_authenticated:
             return
         self.accept()
+        self.initialize()
+
+    def initialize(self):
         async_to_sync(self.channel_layer.group_add)(str(self.user.id), self.channel_name)
         self.requests = [
             {"type": "notifications", "f": self.get_notifications},
@@ -384,9 +388,34 @@ class MainConsumer(JsonWebsocketConsumer):
 class MobileConsumer(MainConsumer):
     def connect(self):
         self.accept()
+        self.user_requests = [
+            {"type": "login-token", "f": self.login_token},
+            {"type": "login", "f": self.login},
+            {"type": "login-social", "f": self.account_page},
+        ]
+        self.user = None
 
     def receive_json(self, content):
-        pass
+        # at login call self.initialize()
+        self.user = self.scope["user"]
+        if self.user.is_authenticated:
+            return super().receive_json(content)
+        else:
+            for r in self.requests:
+                if content["type"] == r["type"]:
+                    r["f"](content)
+        
 
     def disconnect(self, close_code):
+        if self.user:
+            super().disconnect(close_code)
+
+    def login_token(self, msg):
+        pass
+
+    def login(self, msg):
+        pass
+
+    def login_social(self, msg):
+        # pfui..
         pass
