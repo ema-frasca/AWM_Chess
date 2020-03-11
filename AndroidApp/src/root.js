@@ -10,12 +10,15 @@ class Root extends React.Component {
         this.state = {
             loading : true,
             token : null,
-            authenticated : true,
+            authenticated : false,
         };
     }
 
     componentDidMount() {
-
+        AsyncStorage.getItem('TOKEN', (err, result) => {
+            console.log("result: "+ result);
+            console.log("error: "+ JSON.stringify(err));
+        });
     }
 
     render() {
@@ -28,14 +31,14 @@ class Root extends React.Component {
                     {this.state.authenticated  ? (
                         <Stack.Screen name="Home" component={<Text>Yeeee</Text>} />
                     ) : (
-                    // No token found, user isn't signed in
-                    <Stack.Screen
-                        name="SignIn"
-                        component={SignInScreen}
-                        options={{
-                        title: 'Sign in',
-                        }}
-                    />
+                        // No token found, user isn't signed in
+                        <Stack.Screen
+                            name="SignIn"
+                            component={SignInScreen}
+                            options={{
+                            title: 'Sign in',
+                            }}
+                        />
                     )}
                 </Stack.Navigator>
             </View>

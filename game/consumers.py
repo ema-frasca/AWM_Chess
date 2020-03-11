@@ -390,18 +390,16 @@ class MobileConsumer(MainConsumer):
         self.accept()
         self.user_requests = [
             {"type": "login-token", "f": self.login_token},
-            {"type": "login", "f": self.login},
+            {"type": "login_auth", "f": self.login_auth},
             {"type": "login-social", "f": self.account_page},
         ]
         self.user = None
 
     def receive_json(self, content):
-        # at login call self.initialize()
-        self.user = self.scope["user"]
-        if self.user.is_authenticated:
+        if self.user:
             return super().receive_json(content)
         else:
-            for r in self.requests:
+            for r in self.user_requests:
                 if content["type"] == r["type"]:
                     r["f"](content)
         
@@ -411,11 +409,42 @@ class MobileConsumer(MainConsumer):
             super().disconnect(close_code)
 
     def login_token(self, msg):
-        pass
+        from settings import SECRET_KEY
+        from django.contrib.auth.models import User
+        token = msg["token"].encode()
+        user_obj = jwt.decode(token, SECRET_KEY)
+        try:
+            user = User.objects.get(pk=user_obj["pk"])
+        except User.DoesNotExist:
+            self.send_json({"type": "login_token", "error": "Invalid token"})
+            return
+        self.login_user(user)
 
-    def login(self, msg):
-        pass
+    def generate_token(self, user):
+        token = jwt.encode({"pk": user.pk}, SECRET_KEY)
+        self.send_json({"type": "login_token", "token": token.decode()})
+
+    def login_auth(self, msg):
+        from django.contrib.auth import authenticate
+        from settings import SECRET_KEY
+        user = authenticate(username=msg["username"], password=msg["password"])
+        if not user:
+            self.send_json({"type": "login_auth", "error": "Incorrect user and password"})
+            return
+        self.login_user(user)
 
     def login_social(self, msg):
-        # pfui..
-        pass
+        from social_core.backends.google import GoogleOAuth2
+        backend = GoogleOAuth2()
+        user = backend.do_auth(access_token=msg['token'])
+        self.login_user(user)
+
+    def login_user(self, user):
+        self.user = user
+        self.initialize()
+        # add new request: logout
+        self.requests.append({"type": "logout", "f": self.logout})
+        self.generate_token(user)
+
+    def logout(self, msg=None):
+        self.user = None
