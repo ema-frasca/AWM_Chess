@@ -1,7 +1,8 @@
 import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage  } from 'react-native'
 import { imgs, LoadingPage } from './utils'
-import styles from './styles'
+import styles, { FadeInView } from './styles'
+import LoginPage from './login'
 
 class Root extends React.Component {
     constructor(props) {
@@ -14,34 +15,36 @@ class Root extends React.Component {
         };
     }
 
-    componentDidMount() {
+    getToken = () => {
         AsyncStorage.getItem('TOKEN', (err, result) => {
             console.log("result: "+ result);
-            console.log("error: "+ JSON.stringify(err));
+            this.setState({token: result})
         });
+    }
+
+    firstLogin = (token) => {
+        // login message already send
+        AsyncStorage.setItem('token', token);
+        this.setState({token: token, authenticated: true})
+    }
+
+    logout = () => {
+        AsyncStorage.removeItem('token');
+        this.setState({token: null, authenticated: false});
+    }
+
+    componentDidMount() {
+        this.getToken();
     }
 
     render() {
         if (this.state.loading)
             return <LoadingPage />
         return (
-            <View style={{flex: 1}}>
+            <FadeInView style={{flex: 1}}>
                 <ChessHeader />
-                <Stack.Navigator>
-                    {this.state.authenticated  ? (
-                        <Stack.Screen name="Home" component={<Text>Yeeee</Text>} />
-                    ) : (
-                        // No token found, user isn't signed in
-                        <Stack.Screen
-                            name="SignIn"
-                            component={SignInScreen}
-                            options={{
-                            title: 'Sign in',
-                            }}
-                        />
-                    )}
-                </Stack.Navigator>
-            </View>
+                {this.state.authenticated ? <Router /> : <LoginPage />}
+            </FadeInView>
         );
     }
 }
@@ -54,6 +57,10 @@ function ChessHeader(props) {
             </ImageBackground>
         </View>
     );
+}
+
+function Router(props) {
+    return <Text>Sei loggato ;)</Text>
 }
 
 export default Root
