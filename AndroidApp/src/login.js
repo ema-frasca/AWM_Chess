@@ -11,7 +11,7 @@ class LoginPage extends React.Component {
     render() {
         return (
             <View>
-                <button onClick={this.googleLogin}>Login with Google</button>
+                <button title={'Login with Google'} onClick={this.googleLogin}></button>
             </View>
         );
     }
