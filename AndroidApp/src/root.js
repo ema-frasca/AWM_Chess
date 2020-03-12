@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
-import styles, { FadeInView } from './styles'
+import styles, { FadeInView, MyText } from './styles'
 import LoginPage from './login'
 
 class Root extends React.Component {
@@ -30,6 +30,7 @@ class Root extends React.Component {
     }
 
     logout = () => {
+        global.wsSend({type: "logout"});
         AsyncStorage.removeItem('token');
         this.setState({token: null, authenticated: false});
     }
@@ -95,7 +96,7 @@ function ChessHeader(props) {
 function Router(props) {
     return (
         <View>
-            <Text>Sei loggato ;)</Text>
+            <MyText>Sei loggato ;)</MyText>
             <Button title="Logout" onPress={props.logout} />
         </View>
     );

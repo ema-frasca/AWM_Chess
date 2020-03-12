@@ -7,6 +7,7 @@ import styles from './styles'
 const imgs = {
     loadingIcon: require('../assets/imgs/loading.png'),
     headerImage: require('../assets/imgs/chessbg.bmp'),
+    googleLogin: require('../assets/imgs/btn_google_signin.png')
 }
 
 const sprites = {
