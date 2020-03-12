@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ImageBackground, AsyncStorage  } from 'react-native'
+import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
 import styles, { FadeInView } from './styles'
 import LoginPage from './login'
@@ -8,7 +8,7 @@ class Root extends React.Component {
     constructor(props) {
         super(props);
 
-        this.loginToken = {type: "login_token", f: this.loginSuccess, reqId: null};
+        this.loginToken = {type: "login-token", f: this.loginSuccess, reqId: null};
 
         this.state = {
             loading : true,
@@ -58,7 +58,7 @@ class Root extends React.Component {
 
     tryTokenLogin = () => {
         if (this.state.token) {
-            global.wsSend({"type": "login_token", "token": this.state.token})
+            global.wsSend({"type": "login-token", "token": this.state.token})
         } else
             this.setState({loading: false})
     }
@@ -76,7 +76,7 @@ class Root extends React.Component {
         return (
             <FadeInView style={{flex: 1}}>
                 <ChessHeader />
-                {this.state.authenticated ? <Router /> : <LoginPage />}
+                {this.state.authenticated ? <Router logout={this.logout} /> : <LoginPage />}
             </FadeInView>
         );
     }
@@ -93,7 +93,12 @@ function ChessHeader(props) {
 }
 
 function Router(props) {
-    return <Text>Sei loggato ;)</Text>
+    return (
+        <View>
+            <Text>Sei loggato ;)</Text>
+            <Button title="Logout" onPress={props.logout} />
+        </View>
+    );
 }
 
 export default Root

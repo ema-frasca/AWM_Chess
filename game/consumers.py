@@ -390,8 +390,8 @@ class MobileConsumer(MainConsumer):
         self.accept()
         self.user_requests = [
             {"type": "login-token", "f": self.login_token},
-            {"type": "login_auth", "f": self.login_auth},
-            {"type": "login-social", "f": self.account_page},
+            {"type": "login-auth", "f": self.login_auth},
+            {"type": "login-social", "f": self.login_social},
         ]
         self.user = None
 
@@ -409,27 +409,27 @@ class MobileConsumer(MainConsumer):
             super().disconnect(close_code)
 
     def login_token(self, msg):
-        from settings import SECRET_KEY
+        from django.conf.global_settings import SECRET_KEY
         from django.contrib.auth.models import User
         token = msg["token"].encode()
         user_obj = jwt.decode(token, SECRET_KEY)
         try:
             user = User.objects.get(pk=user_obj["pk"])
         except User.DoesNotExist:
-            self.send_json({"type": "login_token", "error": "Invalid token"})
+            self.send_json({"type": "login-token", "error": "Invalid token"})
             return
         self.login_user(user)
 
     def generate_token(self, user):
+        from django.conf.global_settings import SECRET_KEY
         token = jwt.encode({"pk": user.pk}, SECRET_KEY)
-        self.send_json({"type": "login_token", "token": token.decode()})
+        self.send_json({"type": "login-token", "token": token.decode()})
 
     def login_auth(self, msg):
         from django.contrib.auth import authenticate
-        from settings import SECRET_KEY
         user = authenticate(username=msg["username"], password=msg["password"])
         if not user:
-            self.send_json({"type": "login_auth", "error": "Incorrect user and password"})
+            self.send_json({"type": "login-auth", "error": "Incorrect user and password"})
             return
         self.login_user(user)
 
