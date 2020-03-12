@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage  } from 'react-native'
-import { imgs, LoadingPage } from './utils'
+import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
 import styles, { FadeInView } from './styles'
 import LoginPage from './login'
 

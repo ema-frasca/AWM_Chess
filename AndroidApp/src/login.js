@@ -10,10 +10,11 @@ class LoginPage extends React.Component {
 
   googleLogin = async() => {
     try {
-      const result = await Google.logInAsync({
-        androidClientId: ANDROID_CLIENT_ID,
-        scopes: ["profile", "email"]
-      });
+        console.log('\nlogin with google');
+        const result = await Google.logInAsync({
+         androidClientId: ANDROID_CLIENT_ID,
+         scopes: ["profile", "email"]
+        });
 
       if (result.type === "success"){
           console.log('\nuser:' + result.user.id + '  ' + result.user.givenName);
@@ -27,7 +28,7 @@ class LoginPage extends React.Component {
     render() {
         return (
             <View>
-                <Button title={'Login with Google'} onClick={this.googleLogin} />
+                <Button title={'Login with Google'} onPress={this.googleLogin} />
             </View>
         );
     }
