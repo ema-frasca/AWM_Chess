@@ -3,7 +3,6 @@ import { Animated } from 'react-native';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Font from 'expo-font';
 
-loadFont();
 
 const styles = {
   loadingSocket: {
@@ -66,4 +65,4 @@ async function loadFont() {
 
 
 export default styles;
-export { FadeInView };
+export { FadeInView, loadFont };
