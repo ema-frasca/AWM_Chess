@@ -41,7 +41,7 @@ function send_buffer() {
 }
 
 function connect() {
-    var host = "192.168.1.108:8000";
+    var host = "192.168.1.235:8000";
     var ws = new WebSocket("ws://"+ host +"/mobile-ws");
     var connectInterval;
 
