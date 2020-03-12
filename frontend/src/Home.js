@@ -6,7 +6,7 @@ class HomePage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
+        this.notificationListener = {type: "notify", f: this.onNotification, notId: null};
         this.homeRequest = {type: "home-page", f: this.getHome, reqId: null};
 
         this.state = {

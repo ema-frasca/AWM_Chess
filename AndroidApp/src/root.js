@@ -8,6 +8,8 @@ class Root extends React.Component {
     constructor(props) {
         super(props);
 
+        this.loginToken = {type: "login_token", f: this.loginSuccess, reqId: null};
+
         this.state = {
             loading : true,
             token : null,
@@ -16,16 +18,15 @@ class Root extends React.Component {
     }
 
     getToken = () => {
-        AsyncStorage.getItem('TOKEN', (err, result) => {
-            console.log("result: "+ result);
+        AsyncStorage.getItem('token', (err, result) => {
             this.setState({token: result})
+            this.tryTokenLogin();
         });
     }
 
     firstLogin = (token) => {
-        // login message already send
         AsyncStorage.setItem('token', token);
-        this.setState({token: token, authenticated: true})
+        this.setState({token: token})
     }
 
     logout = () => {
@@ -34,7 +35,39 @@ class Root extends React.Component {
     }
 
     componentDidMount() {
+        this.loginToken.reqId = addWsListener(this.loginToken);
+        global.wsOnStateChange.push(this.wsChange);
         this.getToken();
+    }
+
+    componentWillUnmount() {
+        removeWsListener(this.loginToken.reqId);
+        global.wsOnStateChange.pop();
+    }
+
+    loginSuccess = (content) => {
+        let auth = false;
+        if ("token" in content) {
+            if (content.token !== this.state.token)
+                this.firstLogin(content.token);
+            auth = true;
+        }
+
+        this.setState({loading: false, authenticated: auth})
+    }
+
+    tryTokenLogin = () => {
+        if (this.state.token) {
+            global.wsSend({"type": "login_token", "token": this.state.token})
+        } else
+            this.setState({loading: false})
+    }
+
+    wsChange = () => {
+        if (global.ws)
+            this.tryTokenLogin()
+        else
+            this.setState({loading: true, authenticated: false})
     }
 
     render() {
