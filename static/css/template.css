@@ -1,5 +1,5 @@
 body {
-  font-family: "Comic Sans MS", "Comic Sans", "Courier", cursive, sans-serif, Verdana;
+  font-family: "Comic Sans MS", "Comic Sans", "Helvetica", cursive, sans-serif, Verdana;
   font-size: 2vw;
 }
 
@@ -116,6 +116,7 @@ img .icon {width: 3vw;}
   background-position: center;
   background-size: cover;
   box-shadow: 0 0 1vw 1vw white inset;
+  max-width: 100vw;
   /*background:  linear-gradient(180deg, rgb(155, 148, 148) 0%, rgba(255,255,255,1) 80%);; */
 }
 
@@ -196,10 +197,6 @@ img .icon {width: 3vw;}
   display: flex;
 }
 
-/*.loading-page {
-
-}*/
-
 .loading-icon {
   animation: spinning 2s linear infinite;
   width: 10vw; 
@@ -245,10 +242,6 @@ select {
 select:hover {
   cursor: pointer;
 }
-
-/*.select-items {
-  background-color: white;
-}*/
 
 .jumping {
   animation: popping 2s ease 0s infinite;
@@ -448,5 +441,51 @@ select:hover {
 }
 
 @media only screen and (max-width: 768px) {
+  /* font-size x3 */
+  body, input, button, .button, .form-msg,
+  select
+  { font-size: 6vw; }
+
+  div { padding: 1vw; }
+
+  input[type="text"], input[type="password"] { max-width: 80vw; }
+  #content input[type="password"], #content input[type="text"] { max-width: 50vw; }
+
+  h1 {font-size: 9vw;}
+  h2 {font-size: 8vw;}
+  h3 {font-size: 7vw;}
+  h4 {font-size: 5vw;}
+  h5 {font-size: 4vw;}
+  h6 {font-size: 3vw;}
+
+  button, .button {
+    margin: 1vw; padding: 1vw;
+    border-width: 1vw;
+    border-radius: 2vw;
+  }
   
+  img .icon, #notification 
+  {width: 7vw;}
+
+  #header { font-size: 10vw; }
+
+  #main-menu, #content, .login, 
+  .moves-list, .game-container
+  { width: auto; float: none; clear: both; }
+
+  .loading-icon { width: 25vw; }
+
+  .edit-btn.user { font-size: 4vw; }
+
+  .lobby-box { width: 100%; }
+
+  .moves-list > div { max-height: 25vw; }
+  
+  .chess-piece {
+    width: 7vw; 
+    vertical-align: bottom;
+  }
+
+  .board .chess-piece { width: 9vw; }
+
 }

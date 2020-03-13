@@ -39,6 +39,7 @@ class Root extends React.Component {
         this.loginToken.reqId = addWsListener(this.loginToken);
         global.wsOnStateChange.push(this.wsChange);
         this.getToken();
+        global.logout = this.logout;
     }
 
     componentWillUnmount() {
@@ -77,7 +78,7 @@ class Root extends React.Component {
         return (
             <FadeInView style={{flex: 1}}>
                 <ChessHeader />
-                {this.state.authenticated ? <Router logout={this.logout} /> : <LoginPage />}
+                {this.state.authenticated ? <Router /> : <LoginPage />}
             </FadeInView>
         );
     }
@@ -97,7 +98,7 @@ function Router(props) {
     return (
         <View>
             <MyText>Sei loggato ;)</MyText>
-            <Button title="Logout" onPress={props.logout} />
+            <Button title="Logout" onPress={global.logout} />
         </View>
     );
 }
