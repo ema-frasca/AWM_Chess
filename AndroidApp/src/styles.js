@@ -3,6 +3,15 @@ import { Animated, Text, TextInput, TouchableHighlight } from 'react-native';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 
+const sizeDict = {
+  1: RFPercentage(6.5),
+  2: RFPercentage(5.5),
+  3: RFPercentage(4.5),
+  4: RFPercentage(4),
+  5: RFPercentage(3.5),
+  6: RFPercentage(3),
+};
+
 const styles = {
   loadingSocket: {
       position: 'absolute',
@@ -35,12 +44,21 @@ const styles = {
   },
 
   login: {
+    routerOptions: {
+      headerStatusBarHeight: 0,
+      headerTitleAlign: 'center',
+      headerTintColor: 'green', 
+      headerTitleStyle: { 
+        fontFamily: "comic-sans-bold",
+        fontSize: sizeDict[2],
+        alignSelf: 'flex-start'
+      }
+    },
     view: {
       flex: 1,
-      alignItems: 'center', 
       paddingTop: '5%',
+      alignItems: 'center',
     },
-
     google: {
       width: '100%', 
       resizeMode: 'contain',
@@ -74,15 +92,6 @@ const FadeInView = (props) => {
     </Animated.View>
   );
 }
-
-const sizeDict = {
-  1: RFPercentage(6.5),
-  2: RFPercentage(5.5),
-  3: RFPercentage(4.5),
-  4: RFPercentage(4),
-  5: RFPercentage(3.5),
-  6: RFPercentage(3),
-};
 
 function MyText(props) {
   const font = props.bold ? 'comic-sans-bold' : 'comic-sans';
@@ -118,5 +127,14 @@ function MyButton(props) {
   );
 }
 
+function MyAuthLinks(props){
+  const hSize = props.size ? props.size : 4;
+  return (
+    <TouchableHighlight {...props} underlayColor="white" activeOpacity={0.5} >
+      <MyText size={hSize} style={{textDecorationLine: 'underline'}} >{props.children}</MyText>
+    </TouchableHighlight>
+  );
+}
+
 export default styles;
-export { FadeInView, MyText, MyTextInput, MyButton };
+export { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks };

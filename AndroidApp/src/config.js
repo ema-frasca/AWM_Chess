@@ -15,6 +15,7 @@ global.wsOnMessage = new Map();
 
 let timeout = 250;
 
+global.host = true ? "192.168.1.108:8000" : "192.168.1.235:8000";
 connect();
 
 function changeWS(ws) {
@@ -41,8 +42,7 @@ function send_buffer() {
 }
 
 function connect() {
-    var host = true ? "192.168.1.108:8000" : "192.168.1.235:8000";
-    var ws = new WebSocket("ws://"+ host +"/mobile-ws");
+    var ws = new WebSocket("ws://"+ global.host +"/mobile-ws");
     var connectInterval;
 
     ws.onopen = (e) => {

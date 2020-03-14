@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
 import styles, { FadeInView, MyText } from './styles'
-import LoginPage from './login'
+import LoginRouter from './login'
 
 class Root extends React.Component {
     constructor(props) {
@@ -78,7 +78,7 @@ class Root extends React.Component {
         return (
             <FadeInView style={{flex: 1}}>
                 <ChessHeader />
-                {this.state.authenticated ? <Router /> : <LoginPage />}
+                {this.state.authenticated ? <Router /> : <LoginRouter />}
             </FadeInView>
         );
     }
