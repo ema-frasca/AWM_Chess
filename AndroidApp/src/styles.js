@@ -45,7 +45,7 @@ const styles = {
 
   login: {
     routerOptions: {
-      headerStatusBarHeight: 0,
+      headerStatusBarHeight: RFPercentage(5),
       headerTitleAlign: 'center',
       headerTintColor: 'green', 
       headerTitleStyle: { 
