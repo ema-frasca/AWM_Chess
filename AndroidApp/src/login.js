@@ -1,11 +1,12 @@
 import React from 'react'
-import { View, TouchableHighlight, Image, Keyboard } from 'react-native'
+import { View, TouchableHighlight, Image, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native'
 import { imgs, addWsListener, removeWsListener } from './utils'
 import styles, { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks } from './styles'
 import { logInAsync } from 'expo-google-app-auth'
 import { openBrowserAsync } from "expo-web-browser"
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { RFPercentage } from "react-native-responsive-fontsize";
 
 const ANDROID_CLIENT_ID = "130753714497-0qvqmt1ttieljn4uc5crakpdur66ptop.apps.googleusercontent.com"
 
@@ -13,10 +14,9 @@ const ANDROID_CLIENT_ID = "130753714497-0qvqmt1ttieljn4uc5crakpdur66ptop.apps.go
 const Stack = createStackNavigator();
 
 function LoginRouter(props) {
-    const options = styles.login.routerOptions
     return (
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Login" screenOptions={options} >
+          <Stack.Navigator initialRouteName="Login" screenOptions={styles.login.routerOptions} >
             <Stack.Screen name="Login" component={LoginPage} options={{ title: 'Login to start playing' }} />
             <Stack.Screen name="Create" component={SignupPage} options={{ title: 'Create User' }} />
           </Stack.Navigator>
@@ -78,7 +78,7 @@ class LoginForm extends React.Component {
 
     render (){
         return (
-            <View style={{width: '60%', alignItems: 'center'}}>
+            <View style={styles.login.form}>
                 <MyText>Username</MyText>
                 <MyTextInput 
                     value={this.state.username} 
@@ -110,10 +110,70 @@ function AuthButtons(props) {
 }
 
 class SignupPage extends React.Component {
+    constructor(props){
+        super(props);
+        
+        this.signupRequest = {type: "login-signup", f: this.signupError, reqId: null};
+
+        this.state = {
+            username: "",
+            password1: "",
+            password2: "",
+            error: null,
+            avoidKeyboard: false,
+        };
+    }
+
+    signupError = (content) => {
+        this.setState({password1: "", password2: "", error: content.error})
+    }
+
+    componentDidMount() {
+        this.signupRequest.reqId = addWsListener(this.signupRequest);
+    }
+
+    componentWillUnmount() {
+        removeWsListener(this.signupRequest.reqId);
+    }
+
+    submit = () => {
+        Keyboard.dismiss();
+        for (const field in this.state)
+            if (field !== "error" && field !== "avoidKeyboard" && this.state[field] === "")
+                return this.setState({error: field + " cannot be empty"})
+        global.wsSend({type: "login-signup", ...this.state })
+    }
 
     render(){
         return(
-            <MyText>Cazzo</MyText>
+            <FadeInView style={styles.login.view}>
+                <KeyboardAvoidingView style={{width: '70%'}} keyboardVerticalOffset={RFPercentage(25)} 
+                    behavior="position" enabled enabled={this.state.avoidKeyboard} >
+                    <View style={{alignItems: 'center'}}>
+                        <MyText>Username</MyText>
+                        <MyTextInput 
+                            value={this.state.username} 
+                            onChangeText={(text) => this.setState({username: text})}
+                        />
+                        <MyText>Password</MyText>
+                        <MyTextInput 
+                            value={this.state.password1} 
+                            onChangeText={(text) => this.setState({password1: text})}
+                            secureTextEntry
+                        />
+                        <MyText>Confirm Password</MyText>
+                        <MyTextInput 
+                            value={this.state.password2} 
+                            onChangeText={(text) => this.setState({password2: text})}
+                            onFocus={() => this.setState({avoidKeyboard: true})}
+                            onBlur={() => this.setState({avoidKeyboard: false})}
+                            secureTextEntry
+                        />
+                        <MyButton onPress={this.submit}>Sign up</MyButton>
+                    </View>
+                </KeyboardAvoidingView>
+            {this.state.error ? <MyText style={{alignSelf: 'center'}} color="red">{this.state.error}</MyText> : null }
+            </FadeInView>
         );
     }
 }

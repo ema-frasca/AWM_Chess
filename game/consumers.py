@@ -392,6 +392,7 @@ class MobileConsumer(MainConsumer):
             {"type": "login-token", "f": self.login_token},
             {"type": "login-auth", "f": self.login_auth},
             {"type": "login-social", "f": self.login_social},
+            {"type": "login-signup", "f": self.login_signup},
         ]
         self.user = None
 
@@ -445,6 +446,34 @@ class MobileConsumer(MainConsumer):
         # add new request: logout
         self.requests.append({"type": "logout", "f": self.logout})
         self.generate_token(user)
+
+    def login_signup(self, msg):
+        from django.contrib.auth.models import User
+        from django.contrib.auth.password_validation import validate_password, ValidationError
+        content = {"type": "login-signup"}
+
+        if msg["username"] == "":
+            content["error"] = "Username field empty"
+        elif User.objects.filter(username=msg["username"]).count():
+            content["error"] = "Username already used"
+        elif msg["password1"] != msg["password2"]:
+            content["error"] = "The two password fields didn’t match"
+        else:
+            user = User(username=msg['username'])
+            try:
+                validate_password(msg["password1"], user)
+            except ValidationError as val_err:
+                content["error"] = str(val_err.messages[0])
+            else:
+                user.set_password(msg["password1"])
+                user.save()
+                self.login_user(user)
+                return
+
+        self.send_json(content)
+        
+        
+
 
     def logout(self, msg=None):
         self.user = None

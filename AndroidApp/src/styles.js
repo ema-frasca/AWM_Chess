@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Animated, Text, TextInput, TouchableHighlight } from 'react-native';
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFPercentage } from "react-native-responsive-fontsize";
 
 
 const sizeDict = {
@@ -45,7 +45,7 @@ const styles = {
 
   login: {
     routerOptions: {
-      headerStatusBarHeight: RFPercentage(5),
+      headerStatusBarHeight: RFPercentage(1),
       headerTitleAlign: 'center',
       headerTintColor: 'green', 
       headerTitleStyle: { 
@@ -59,11 +59,14 @@ const styles = {
       paddingTop: '5%',
       alignItems: 'center',
     },
+    form: {
+      width: '70%', 
+      alignItems: 'center'
+    },
     google: {
       width: '100%', 
       resizeMode: 'contain',
     },
-
     button: {
       paddingLeft: '5%', paddingRight: '5%',
       marginBottom: '0%',
@@ -108,13 +111,16 @@ function MyTextInput(props) {
   const font = props.bold ? 'comic-sans-bold' : 'comic-sans';
   const hSize = props.size ? props.size : 4;
   const style = {
+    backgroundColor: "white",
     borderColor: "black", 
     borderWidth: RFPercentage(0.5), 
     width: '100%', 
     paddingLeft: '2%', paddingRight: '2%',
   };
   return (
-    <TextInput autoCapitalize="none" {...props} style={[{fontFamily: font, fontSize: sizeDict[hSize]}, style, props.style]} />
+    <TextInput autoCapitalize="none" autoCorrect={false} autoCompleteType="off" clearButtonMode="always" 
+      {...props} style={[{fontFamily: font, fontSize: sizeDict[hSize]}, style, props.style]} 
+    />
   );
 }
 
