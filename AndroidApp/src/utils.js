@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Text, Image, View, Animated } from 'react-native';
 
 import styles from './styles'
@@ -7,8 +7,19 @@ import styles from './styles'
 const imgs = {
     loadingIcon: require('../assets/imgs/loading.png'),
     headerImage: require('../assets/imgs/chessbg.bmp'),
-    googleLogin: require('../assets/imgs/btn_google_signin.png')
+    googleLogin: require('../assets/imgs/btn_google_signin.png'),
+    googleAccount: require('../assets/imgs/google_account.png'),
 }
+
+function MyImage(props){
+    let style = { resizeMode: 'contain' };
+    if ("width" in props) {
+      style.width = props.width;
+      if (! "noHeight" in props)
+          style.height = "height" in props ? props.height : props.width;
+    }
+    return <Image {...props} source={imgs[props.name]} style={[style, props.style]} />
+  }
 
 const sprites = {
 
@@ -153,6 +164,6 @@ class TimerDisplay extends React.Component {
 }
 
 export { 
-    LoadingScreen, LoadingPage, addWsListener, removeWsListener, 
+    LoadingScreen, LoadingPage, MyImage, addWsListener, removeWsListener, 
     PieceImg, displayTime, TimerDisplay, imgs, sprites
  };

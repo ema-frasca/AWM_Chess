@@ -1,8 +1,16 @@
 import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
-import styles, { FadeInView, MyText } from './styles'
+import styles, { FadeInView, MyText, sizeDict } from './styles'
 import LoginRouter from './login'
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import HomeRouter from "./Home";
+import LobbyPage from "./Lobby";
+import AccountPage from "./Account";
+
 
 class Root extends React.Component {
     constructor(props) {
@@ -94,12 +102,38 @@ function ChessHeader(props) {
     );
 }
 
+
+const Tab = createBottomTabNavigator();
+
 function Router(props) {
+    const options={
+        activeBackgroundColor: 'rgb(255, 249, 199)',
+        activeTintColor: 'black',
+        showIcon: false,
+        labelStyle: {
+            fontSize: sizeDict[5],
+            fontFamily: 'comic-sans-bold',
+        },
+        tabStyle: {
+            borderColor: 'grey',
+            borderRightWidth: 1,
+            justifyContent: 'center',
+
+        },
+        keyboardHidesTabBar: true,
+    };
+    const MyLabel = (title) => (props) => {
+        return <MyText size={5} bold color={props.color} style={{textAlign: 'center', lineHeight: sizeDict[4]}} >{title}</MyText>;
+    }
     return (
-        <View>
-            <MyText>Sei loggato ;)</MyText>
-            <Button title="Logout" onPress={global.logout} />
-        </View>
+        <NavigationContainer>
+          <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBarOptions={options}>
+            <Tab.Screen name="Home" component={HomeRouter} />
+            <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ type: "quick" }} options={{tabBarLabel: MyLabel('Quick Game')}} />
+            <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ type: "slow" }} options={{tabBarLabel: MyLabel('Slow Game')}} />
+            <Tab.Screen name="Account" component={AccountPage} />
+          </Tab.Navigator>
+        </NavigationContainer>
     );
 }
 

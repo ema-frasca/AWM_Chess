@@ -445,6 +445,7 @@ class MobileConsumer(MainConsumer):
         self.initialize()
         # add new request: logout
         self.requests.append({"type": "logout", "f": self.logout})
+        self.requests.append({"type": "login-token", "f": self.login_token})
         self.generate_token(user)
 
     def login_signup(self, msg):
@@ -471,9 +472,6 @@ class MobileConsumer(MainConsumer):
                 return
 
         self.send_json(content)
-        
-        
-
 
     def logout(self, msg=None):
         self.user = None

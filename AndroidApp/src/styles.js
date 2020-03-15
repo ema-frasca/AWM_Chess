@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Animated, Text, TextInput, TouchableHighlight } from 'react-native';
+import { Animated, Text, TextInput, TouchableHighlight, Image } from 'react-native';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 
@@ -63,11 +63,8 @@ const styles = {
       width: '70%', 
       alignItems: 'center'
     },
-    google: {
-      width: '100%', 
-      resizeMode: 'contain',
-    },
     button: {
+      margin: '5%',
       paddingLeft: '5%', paddingRight: '5%',
       marginBottom: '0%',
     }
@@ -79,7 +76,11 @@ const styles = {
     borderWidth: RFPercentage(0.5),
     borderRadius: RFPercentage(1.5),
     alignItems: 'center',
-    padding: '2%', margin: '5%',
+    padding: '2%', margin: '1%',
+  },
+
+  account: {
+
   },
 
 };
@@ -101,7 +102,7 @@ function MyText(props) {
   const hSize = props.size ? props.size : 4;
   const color = props.color ? props.color : "black"
   return (
-    <Text style={[{fontFamily: font, fontSize: sizeDict[hSize], color: color}, props.style]}>
+    <Text {...props} style={[{fontFamily: font, fontSize: sizeDict[hSize], color: color}, props.style]} >
       {props.children}
     </Text>
   );
@@ -114,11 +115,11 @@ function MyTextInput(props) {
     backgroundColor: "white",
     borderColor: "black", 
     borderWidth: RFPercentage(0.5), 
-    width: '100%', 
+    width: ("width" in props ? props.width : '100%'), 
     paddingLeft: '2%', paddingRight: '2%',
   };
   return (
-    <TextInput autoCapitalize="none" autoCorrect={false} autoCompleteType="off" clearButtonMode="always" 
+    <TextInput autoCapitalize="none" autoCorrect={false} autoCompleteType="off" 
       {...props} style={[{fontFamily: font, fontSize: sizeDict[hSize]}, style, props.style]} 
     />
   );
@@ -143,4 +144,5 @@ function MyAuthLinks(props){
 }
 
 export default styles;
-export { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks };
+export { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks, 
+  sizeDict };

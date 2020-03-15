@@ -1,6 +1,6 @@
 import React from 'react'
-import { View, TouchableHighlight, Image, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native'
-import { imgs, addWsListener, removeWsListener } from './utils'
+import { View, TouchableHighlight, Keyboard, KeyboardAvoidingView } from 'react-native'
+import { addWsListener, removeWsListener, MyImage } from './utils'
 import styles, { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks } from './styles'
 import { logInAsync } from 'expo-google-app-auth'
 import { openBrowserAsync } from "expo-web-browser"
@@ -42,7 +42,7 @@ class LoginPage extends React.Component {
             <FadeInView style={styles.login.view}>
                 <LoginForm />
                 <TouchableHighlight style={{width: '80%'}} activeOpacity={0.6} underlayColor="white" onPress={this.googleLogin}>
-                    <Image style={styles.login.google} source={imgs.googleLogin}/>
+                    <MyImage width="100%" noHeight name="googleLogin"/>
                 </TouchableHighlight>
                 <AuthButtons navigation={this.props.navigation} />
             </FadeInView>
@@ -148,7 +148,7 @@ class SignupPage extends React.Component {
         return(
             <FadeInView style={styles.login.view}>
                 <KeyboardAvoidingView style={{width: '70%'}} keyboardVerticalOffset={RFPercentage(25)} 
-                    behavior="position" enabled enabled={this.state.avoidKeyboard} >
+                    behavior="position" enabled={this.state.avoidKeyboard} >
                     <View style={{alignItems: 'center'}}>
                         <MyText>Username</MyText>
                         <MyTextInput 
@@ -169,10 +169,10 @@ class SignupPage extends React.Component {
                             onBlur={() => this.setState({avoidKeyboard: false})}
                             secureTextEntry
                         />
-                        <MyButton onPress={this.submit}>Sign up</MyButton>
+                        <MyButton style={styles.login.button} onPress={this.submit}>Sign up</MyButton>
                     </View>
                 </KeyboardAvoidingView>
-            {this.state.error ? <MyText style={{alignSelf: 'center'}} color="red">{this.state.error}</MyText> : null }
+            {this.state.error ? <MyText style={{textAlign: 'center'}} color="red">{this.state.error}</MyText> : null }
             </FadeInView>
         );
     }
