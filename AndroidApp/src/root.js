@@ -111,10 +111,7 @@ function Router(props) {
         activeBackgroundColor: 'rgb(255, 249, 199)',
         activeTintColor: 'black',
         showIcon: false,
-        labelStyle: {
-            fontSize: sizeDict[5],
-            fontFamily: 'comic-sans-bold',
-        },
+        labelStyle: styles.text(5, true),
         tabStyle: {
             borderColor: 'grey',
             borderRightWidth: 1,

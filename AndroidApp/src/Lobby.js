@@ -1,13 +1,12 @@
 import React from 'react'
 import { View, Picker, TouchableHighlight, ScrollView } from 'react-native'
 import { addWsListener, removeWsListener, PieceImg, LoadingPage } from './utils'
-import styles, { FadeInView, MyText, MyButton } from './styles'
+import styles, { FadeInView, MyText, MyButton, MyPicker, InlineView } from './styles'
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { useNavigation } from '@react-navigation/native';
 
 
 class LobbyPage extends React.Component {
-    // MyLobby borderTop
     constructor(props) {
         super(props);
 
@@ -41,8 +40,8 @@ class LobbyPage extends React.Component {
         if (this.quick && this.state.leftMatches === 0 && this.state.redirectId)
             this.props.navigation.jumpTo('Home')
         return (
-            <ScrollView>
-                <FadeInView >
+            <ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
+                <FadeInView>
                     {this.state.leftMatches ? <Lobbies quick={this.quick} /> : <CapReach quick={this.quick} />}
                     <MyLobby leftMatches={this.state.leftMatches} quick={this.quick} />
                 </FadeInView>
@@ -146,7 +145,6 @@ class MyLobby extends React.Component {
 }
 
 class CreateLobby extends React.Component {
-    // item className="select-items"
     constructor(props) {
         super(props);
 
@@ -183,20 +181,18 @@ class CreateLobby extends React.Component {
                 <MyButton onPress={this.toggleEdit}>{btnText}</MyButton>
                 {this.state.onEdit ? (
                     <FadeInView>
-                        <MyText>Chess pieces: </MyText>
-                            <Picker selectedValue={this.state.color} 
-                                onValueChange={(value, i) => this.setState({color: value})} 
-                                prompt="Chess pieces"
-                            >
-                                {opts.colors.map((op, i) => <Picker.Item value={op} label={op} key={i} />)}
-                            </Picker>
-                        <MyText>{timeLabel}: </MyText>
-                        <Picker selectedValue={this.state.time} 
-                            onValueChange={(value, i) => this.setState({time: value})} 
-                            prompt={timeLabel}
+                        <MyPicker title="Chess pieces"
+                            selectedValue={this.state.color} 
+                            onValueChange={(value, i) => this.setState({color: value})} 
                         >
-                            {opts.times.map((op, i) => <Picker.Item value={op} label={`${op} ${opts.unit}`} key={i} />)}
-                        </Picker>
+                            {opts.colors.map((op, i) => <Picker.Item value={op} label={op} key={i} />)}
+                        </MyPicker>
+                        <MyPicker title={timeLabel}
+                                selectedValue={this.state.time} 
+                                onValueChange={(value, i) => this.setState({time: value})}
+                        >
+                            {opts.times.map((op, i) => <Picker.Item value={op} label={op + ' ' + opts.unit} key={i} />)}
+                        </MyPicker>
                         <MyButton onPress={this.handleSubmit}>enter</MyButton>
                     </FadeInView>
                 ) : null}
@@ -212,7 +208,7 @@ function ShowLobbyLink(props){
     const navigation = useNavigation()
     const press = () => {navigation.jumpTo('Home', {screen: "Game", params: {id: props.id}})};
     return(
-        <TouchableHighlight onPress={press} >
+        <TouchableHighlight onPress={press} underlayColor="rgb(255, 255, 240)" activeOpacity={0.5} >
             <ShowLobby {...props} />
         </TouchableHighlight>
     );
@@ -255,9 +251,14 @@ function ShowLobby(props) {
         timeStr = props.time / 60 + " hours";
 
     return(
-        <View >
-            <MyText>{username}({category}){colorIcon}{timeStr}</MyText>
-            <MyText size={6} >{piecesText}</MyText>
+        <View style={{borderColor: 'black', borderWidth: RFPercentage(1), margin: RFPercentage(0.5)}} >
+            <InlineView>
+                <MyText bold>{username}</MyText>
+                <MyText>({category})</MyText>
+                {colorIcon}
+                <MyText>{timeStr}</MyText>
+            </InlineView>
+            {colorIcon === null ? <MyText size={6}>{piecesText}</MyText> : null}
         </View>
     );
 }

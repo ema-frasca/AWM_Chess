@@ -1,5 +1,5 @@
 import React from 'react'
-import { Animated, Text, TextInput, TouchableHighlight, Image } from 'react-native';
+import { Animated, Text, TextInput, TouchableHighlight, View, Picker } from 'react-native';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 
@@ -13,22 +13,10 @@ const sizeDict = {
 };
 
 const styles = {
-  loadingSocket: {
-      position: 'absolute',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      top: 0, bottom: 0, left: 0, right: 0,
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-
-  loadingImage: {width: '20%', height: '20%', resizeMode: 'contain' },
-
-  loadingPage: {
-    position: 'relative',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  text: (size=4, bold=false) => {return {
+    fontFamily: bold ? 'comic-sans-bold' : 'comic-sans',
+    fontSize: sizeDict[size]
+  }},
 
   header: {
     image: {
@@ -77,10 +65,6 @@ const styles = {
     borderRadius: RFPercentage(1.5),
     alignItems: 'center',
     padding: '2%', margin: '1%',
-  },
-
-  account: {
-
   },
 
 };
@@ -151,6 +135,30 @@ function MyAuthLinks(props){
   );
 }
 
+function MyPicker(props){
+  // item className="select-items" -> cambio font e size
+  return(
+    <View style={{flex: 1, flexDirection: 'row'}}>
+      <MyText style={{flex: 1}} >{props.title}: </MyText>
+      <Picker style={[{flex: 1}, styles.text()]}
+          selectedValue={props.selectedValue} 
+          onValueChange={props.onValueChange} 
+          prompt={props.title}
+      >
+          {props.children}
+      </Picker>
+    </View>
+  );
+}
+
+function InlineView(props) {
+  return(
+    <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+      {props.children}
+    </View>
+  );
+}
+
 export default styles;
-export { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks, 
-  sizeDict };
+export { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks, MyPicker, 
+  InlineView, sizeDict };

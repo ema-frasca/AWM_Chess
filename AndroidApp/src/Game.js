@@ -6,18 +6,6 @@ import styles, { FadeInView, MyText, MyButton } from './styles'
 
 class GamePage extends React.Component {
 
-    componentDidMount(){
-        //this.props.route.params.resetScreen();
-        this._unsubscribe = this.props.navigation.addListener('tabPress', (e) => {
-            // do something
-            console.log(JSON.stringify(e));
-          });
-    }
-
-    componentWillUnmount() {
-        this._unsubscribe();
-      }
-
     render(){
         return (
             <View>

@@ -12,12 +12,12 @@ const Stack = createStackNavigator();
 
 function HomeRouter(props) {
   // console.log(JSON.stringify(props));
-  //console.log(JSON.stringify(props.navigation))
-  let id = null;
-  if (props.route.params != undefined && props.route.params.id ) {
-    console.log('id '+ props.route.params.id)
-  }
+  // console.log(JSON.stringify(props.navigation))
+  
+  useNavigationState(state => state);
+  console.log('home router render')
   //const reset = () => { if (props.route.params != undefined) props.route.params.screen = "Home";}
+  
   return (
     <Stack.Navigator initialRouteName="Home" headerMode="none">
       <Stack.Screen name="Home" component={HomePage} />

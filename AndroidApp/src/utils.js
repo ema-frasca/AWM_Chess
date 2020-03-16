@@ -38,7 +38,7 @@ const piecesDict = {
 }
 
 function PieceImg(props) {
-    // className = "chess-piece ";
+    // className = "chess-piece "-> dimensioni;
     return <Image source={piecesDict[props.piece]} />;
 }
 
@@ -48,6 +48,14 @@ class LoadingScreen extends React.Component {
 
         this.state = {
             loading: true
+        };
+
+        this.style = {
+            position: 'absolute',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            top: 0, bottom: 0, left: 0, right: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
         };
     }
 
@@ -70,7 +78,7 @@ class LoadingScreen extends React.Component {
     render () {
         if (this.state.loading)
             return (
-                <View style={styles.loadingSocket}>
+                <View style={this.style}>
                     <LoadingImage />
                     <Text>Loading...</Text>
                 </View>
@@ -85,6 +93,10 @@ class LoadingImage extends React.Component {
         super(props);
 
         this.state = {rotationValue: new Animated.Value(0)}
+        this.style = {
+            width: '20%', height: '20%', minHeight: 80, minWidth: 80, 
+            resizeMode: 'contain' 
+        };
     }
 
     componentDidMount(){
@@ -99,13 +111,19 @@ class LoadingImage extends React.Component {
             outputRange: ["0deg", "360deg"]
           });
         let transformStyle = { transform: [{ rotate: rotation }] };
-        return <Animated.Image source={imgs.loadingIcon} style={[styles.loadingImage, transformStyle]} />;
+        return <Animated.Image source={imgs.loadingIcon} style={[this.style, transformStyle]} />;
     }
 }
 
 function LoadingPage(props) {
+    const style = {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    };
+
     return (
-        <View style={styles.loadingPage}>
+        <View style={style}>
             <LoadingImage />
             <Text>Loading...</Text>
         </View>
