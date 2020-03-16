@@ -39,7 +39,8 @@ const piecesDict = {
 
 function PieceImg(props) {
     // className = "chess-piece "-> dimensioni;
-    return <Image source={piecesDict[props.piece]} />;
+    const width = props.icon ? '15%' : '100%';
+    return <Image style={{height: '100%', width: width, resizeMode: 'contain'}} source={piecesDict[props.piece]} />;
 }
 
 class LoadingScreen extends React.Component {

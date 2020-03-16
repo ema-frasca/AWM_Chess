@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Picker, TouchableHighlight, ScrollView } from 'react-native'
+import { View, TouchableHighlight, ScrollView } from 'react-native'
 import { addWsListener, removeWsListener, PieceImg, LoadingPage } from './utils'
 import styles, { FadeInView, MyText, MyButton, MyPicker, InlineView } from './styles'
 import { RFPercentage } from "react-native-responsive-fontsize";
@@ -184,15 +184,13 @@ class CreateLobby extends React.Component {
                         <MyPicker title="Chess pieces"
                             selectedValue={this.state.color} 
                             onValueChange={(value, i) => this.setState({color: value})} 
-                        >
-                            {opts.colors.map((op, i) => <Picker.Item value={op} label={op} key={i} />)}
-                        </MyPicker>
+                            items={opts.colors.map((op, i) => {return {value: op, label: String(op)};})}
+                        />
                         <MyPicker title={timeLabel}
                                 selectedValue={this.state.time} 
                                 onValueChange={(value, i) => this.setState({time: value})}
-                        >
-                            {opts.times.map((op, i) => <Picker.Item value={op} label={op + ' ' + opts.unit} key={i} />)}
-                        </MyPicker>
+                                items={opts.times.map((op, i) => {return {value: op, label: `${op} ${opts.unit}`};})}
+                        />
                         <MyButton onPress={this.handleSubmit}>enter</MyButton>
                     </FadeInView>
                 ) : null}
@@ -208,7 +206,7 @@ function ShowLobbyLink(props){
     const navigation = useNavigation()
     const press = () => {navigation.jumpTo('Home', {screen: "Game", params: {id: props.id}})};
     return(
-        <TouchableHighlight onPress={press} underlayColor="rgb(255, 255, 240)" activeOpacity={0.5} >
+        <TouchableHighlight onPress={press} underlayColor="rgb(255, 255, 240)" >
             <ShowLobby {...props} />
         </TouchableHighlight>
     );
@@ -232,11 +230,11 @@ function ShowLobby(props) {
     if ("black" in props) {
         username = props.black.username;
         category = props.black.category;
-        colorIcon = <PieceImg piece="k"/>;
+        colorIcon = <PieceImg piece="k" icon/>;
     } else {
         username = props.white.username;
         category = props.white.category;
-        colorIcon = <PieceImg piece="K"/>;
+        colorIcon = <PieceImg piece="K" icon/>;
     }
     
     if (props.random === true) {
@@ -251,7 +249,7 @@ function ShowLobby(props) {
         timeStr = props.time / 60 + " hours";
 
     return(
-        <View style={{borderColor: 'black', borderWidth: RFPercentage(1), margin: RFPercentage(0.5)}} >
+        <View style={{borderColor: 'black', borderWidth: RFPercentage(1), margin: RFPercentage(1)}} >
             <InlineView>
                 <MyText bold>{username}</MyText>
                 <MyText>({category})</MyText>

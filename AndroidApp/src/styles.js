@@ -1,6 +1,7 @@
 import React from 'react'
-import { Animated, Text, TextInput, TouchableHighlight, View, Picker } from 'react-native';
+import { Animated, Text, TextInput, TouchableHighlight, View, TouchableOpacity } from 'react-native';
 import { RFPercentage } from "react-native-responsive-fontsize";
+import RNPickerSelect from 'react-native-picker-select';
 
 
 const sizeDict = {
@@ -69,6 +70,46 @@ const styles = {
 
 };
 
+function MyTabBar({ state, descriptors, navigation }) {
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label =
+          options.tabBarLabel !== undefined
+            ? options.tabBarLabel
+            : options.title !== undefined
+            ? options.title
+            : route.name;
+
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        return (
+          <TouchableOpacity
+            onPress={onPress}
+            style={{ flex: 1, backgroundColor: isFocused ? 'rgb(255, 249, 199)' : 'white' }}
+          >
+            <Text style={{ color: isFocused ? 'black' : 'grey' }}>
+              {label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
 class FadeInView extends React.Component {
   constructor(props) {
     super(props);
@@ -136,17 +177,20 @@ function MyAuthLinks(props){
 }
 
 function MyPicker(props){
-  // item className="select-items" -> cambio font e size
   return(
-    <View style={{flex: 1, flexDirection: 'row'}}>
+    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
       <MyText style={{flex: 1}} >{props.title}: </MyText>
-      <Picker style={[{flex: 1}, styles.text()]}
-          selectedValue={props.selectedValue} 
-          onValueChange={props.onValueChange} 
-          prompt={props.title}
-      >
-          {props.children}
-      </Picker>
+      <RNPickerSelect
+        placeholder={{}}
+        value={props.selectedValue}
+        onValueChange={props.onValueChange}
+        useNativeAndroidPickerStyle={false}
+        style={{
+          inputAndroid: [styles.text(), {paddingRight: 30}],
+        }}
+        items={props.items}
+        
+      />
     </View>
   );
 }
@@ -161,4 +205,4 @@ function InlineView(props) {
 
 export default styles;
 export { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks, MyPicker, 
-  InlineView, sizeDict };
+  InlineView, MyTabBar, sizeDict };

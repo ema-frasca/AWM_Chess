@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
-import styles, { FadeInView, MyText, sizeDict } from './styles'
+import styles, { FadeInView, MyText, sizeDict, MyTabBar } from './styles'
 import LoginRouter from './login'
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -125,7 +125,7 @@ function Router(props) {
     }
     return (
         <NavigationContainer>
-          <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBarOptions={options}>
+          <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBarOptions={options} tabBar={MyTabBar}>
             <Tab.Screen name="Home" component={HomeRouter} />
             <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{tabBarLabel: MyLabel('Quick Game')}} />
             <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{tabBarLabel: MyLabel('Slow Game')}} />
