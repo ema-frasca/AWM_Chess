@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeRouter from "./Home";
 import LobbyPage from "./Lobby";
 import AccountPage from "./Account";
+import GamePage from "./Game";
 
 
 class Root extends React.Component {
@@ -129,8 +130,8 @@ function Router(props) {
         <NavigationContainer>
           <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBarOptions={options}>
             <Tab.Screen name="Home" component={HomeRouter} />
-            <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ type: "quick" }} options={{tabBarLabel: MyLabel('Quick Game')}} />
-            <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ type: "slow" }} options={{tabBarLabel: MyLabel('Slow Game')}} />
+            <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{tabBarLabel: MyLabel('Quick Game')}} />
+            <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{tabBarLabel: MyLabel('Slow Game')}} />
             <Tab.Screen name="Account" component={AccountPage} />
           </Tab.Navigator>
         </NavigationContainer>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Animated, Text, TextInput, TouchableHighlight, Image } from 'react-native';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
@@ -85,16 +85,24 @@ const styles = {
 
 };
 
-const FadeInView = (props) => {
-  const fadeValue = new Animated.Value(0); 
+class FadeInView extends React.Component {
+  constructor(props) {
+    super(props);
 
-  React.useEffect(() => Animated.timing(fadeValue, { toValue: 1, duration: 1000 }).start(), []);
+    this.state = {fadeValue: new Animated.Value(0)}
+  }
 
-  return (
-    <Animated.View style={[{flex: 1, opacity: fadeValue }, props.style]}>
-      {props.children}
-    </Animated.View>
-  );
+  componentDidMount(){
+    Animated.timing(this.state.fadeValue, { toValue: 1, duration: 1000 }).start();
+  }
+
+  render(){
+    return (
+      <Animated.View style={[{flex: 1, opacity: this.state.fadeValue }, this.props.style]}>
+        {this.props.children}
+      </Animated.View>
+    );
+  }
 }
 
 function MyText(props) {

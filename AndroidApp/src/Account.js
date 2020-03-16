@@ -37,11 +37,11 @@ class AccountPage extends React.Component {
 
     render() {
         if (this.state.loading)
-            return <LoadingPage loading={true}/>;
+            return <LoadingPage />;
         const user = this.state.user;
         
         return (
-            <ScrollView style={{paddingTop: '2%'}}>
+            <ScrollView style={{paddingTop: '2%'}} keyboardShouldPersistTaps="handled">
                 <KeyboardAvoidingView keyboardVerticalOffset={-RFPercentage(7)} 
                 behavior="position" enabled={this.state.avoidKeyboard}>
                     <FadeInView style={{alignItems: 'center'}}>
@@ -101,6 +101,7 @@ class UserEditField extends React.Component {
             this.setState({value: this.props.value});
 
         if (!onEdit) {
+            this.props.akc(true)
             global.wsSend({
                 type: this.editRequest.type,
                 field: this.props.field,

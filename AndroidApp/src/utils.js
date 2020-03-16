@@ -21,24 +21,25 @@ function MyImage(props){
     return <Image {...props} source={imgs[props.name]} style={[style, props.style]} />
   }
 
-const sprites = {
-
+const piecesDict = {
+    empty: "empty.png",
+    k: require("../assets/sprites/black_king.png"),
+    q: require("../assets/sprites/black_queen.png"),
+    b: require("../assets/sprites/black_bishop.png"),
+    n: require("../assets/sprites/black_knight.png"),
+    r: require("../assets/sprites/black_rook.png"),
+    p: require("../assets/sprites/black_pawn.png"),
+    K: require("../assets/sprites/white_king.png"),
+    Q: require("../assets/sprites/white_queen.png"),
+    B: require("../assets/sprites/white_bishop.png"),
+    N: require("../assets/sprites/white_knight.png"),
+    R: require("../assets/sprites/white_rook.png"),
+    P: require("../assets/sprites/white_pawn.png"),
 }
 
-const piecesDict = {
-    empty: "empty",
-    k: "black_king",
-    q: "black_queen",
-    b: "black_bishop",
-    n: "black_knight",
-    r: "black_rook",
-    p: "black_pawn",
-    K: "white_king",
-    Q: "white_queen",
-    B: "white_bishop",
-    N: "white_knight",
-    R: "white_rook",
-    P: "white_pawn",
+function PieceImg(props) {
+    // className = "chess-piece ";
+    return <Image source={piecesDict[props.piece]} />;
 }
 
 class LoadingScreen extends React.Component {
@@ -79,19 +80,27 @@ class LoadingScreen extends React.Component {
     }
 }
 
-function LoadingImage(props) {
-    let rotationValue = new Animated.Value(0);
-    const rotation = rotationValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0deg", "360deg"]
-      });
-    let transformStyle = { transform: [{ rotate: rotation }] };
+class LoadingImage extends React.Component {
+    constructor(props){
+        super(props);
 
-    Animated.loop(
-        Animated.timing(rotationValue, {toValue: 1, duration: 2000})
-    ).start();
- 
-    return <Animated.Image source={imgs.loadingIcon} style={[styles.loadingImage, transformStyle]} />;
+        this.state = {rotationValue: new Animated.Value(0)}
+    }
+
+    componentDidMount(){
+        Animated.loop(
+            Animated.timing(this.state.rotationValue, {toValue: 1, duration: 2000})
+        ).start();    
+    }
+
+    render(){
+        const rotation = this.state.rotationValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0deg", "360deg"]
+          });
+        let transformStyle = { transform: [{ rotate: rotation }] };
+        return <Animated.Image source={imgs.loadingIcon} style={[styles.loadingImage, transformStyle]} />;
+    }
 }
 
 function LoadingPage(props) {
@@ -101,14 +110,6 @@ function LoadingPage(props) {
             <Text>Loading...</Text>
         </View>
     );
-}
-
-function PieceImg(props) {
-    let className = "chess-piece ";
-    if (props.className)
-        className += props.className;
-    const src = global.sprites + piecesDict[props.piece] + ".png"
-    return <img className={className} alt={props.piece} src={src} ></img>;
 }
 
 function addWsListener(obj) {
@@ -165,5 +166,5 @@ class TimerDisplay extends React.Component {
 
 export { 
     LoadingScreen, LoadingPage, MyImage, addWsListener, removeWsListener, 
-    PieceImg, displayTime, TimerDisplay, imgs, sprites
+    PieceImg, displayTime, TimerDisplay, imgs
  };

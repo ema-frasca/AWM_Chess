@@ -251,6 +251,4 @@ function ShowLobby(props) {
     );
 }
 
-
-
 export default LobbyPage;
