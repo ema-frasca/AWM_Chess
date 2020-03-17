@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, Image, View, Animated } from 'react-native';
 
-import styles from './styles'
+import styles, { MyText } from './styles'
 
 
 const imgs = {
@@ -15,7 +15,7 @@ function MyImage(props){
     let style = { resizeMode: 'contain' };
     if ("width" in props) {
       style.width = props.width;
-      if (! "noHeight" in props)
+      if (! ("noHeight" in props))
           style.height = "height" in props ? props.height : props.width;
     }
     return <Image {...props} source={imgs[props.name]} style={[style, props.style]} />
@@ -38,7 +38,6 @@ const piecesDict = {
 }
 
 function PieceImg(props) {
-    // className = "chess-piece "-> dimensioni;
     const width = props.icon ? '15%' : '100%';
     return <Image style={{height: '100%', width: width, resizeMode: 'contain'}} source={piecesDict[props.piece]} />;
 }
@@ -179,7 +178,7 @@ class TimerDisplay extends React.Component {
         const time = Math.max(0, this.state.time)
         if (time === 0)
             global.wsSend({"type": "times-check"});
-        return <span>{displayTime(time)}</span>;
+        return <MyText>{displayTime(time)}</MyText>;
     }
 }
 

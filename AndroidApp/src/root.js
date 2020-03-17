@@ -1,7 +1,8 @@
 import React from 'react'
 import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
-import styles, { FadeInView, MyText, sizeDict, MyTabBar } from './styles'
+import styles, { FadeInView, MyText, MyTabBar, PoppingView } from './styles'
+import { RFPercentage } from "react-native-responsive-fontsize";
 import LoginRouter from './login'
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -110,7 +111,7 @@ function Router(props) {
     return (
         <NavigationContainer>
           <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBar={MyTabBar}>
-            <Tab.Screen name="Home" component={HomePage} />
+            <Tab.Screen name="Home" component={HomePage} options={{icon: <NotificationPop />}} />
             <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{title: 'Quick Game'}} />
             <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{title: 'Slow Game'}} />
             <Tab.Screen name="Account" component={AccountPage} />
@@ -118,6 +119,56 @@ function Router(props) {
           </Tab.Navigator>
         </NavigationContainer>
     );
+}
+
+class NotificationPop extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
+        this.notificationRequest = {type: "notifications", f: this.getNotification, reqId: null};
+
+        this.state = {
+            notifications: 0
+        };
+    }
+
+    componentDidMount() {
+        this.notificationRequest.reqId = addWsListener(this.notificationRequest);
+        this.notificationListener.notId = addWsListener(this.notificationListener);
+        this.requestPage();
+    }
+
+    requestPage = () => {
+        global.wsSend({type: this.notificationRequest.type});
+    }
+
+    getNotification = (content) => {
+        this.setState({notifications: content.number});
+    }
+
+    onNotification = (content) => {
+        this.requestPage();
+    }
+    
+    componentWillUnmount() {
+        removeWsListener(this.notificationRequest.reqId);
+        removeWsListener(this.notificationListener.notId);
+    }
+
+    render() {
+        return this.state.notifications ? (
+            <PoppingView style={{
+                position: 'absolute', backgroundColor: 'rgba(3, 99, 131, 0.5)', 
+                borderRadius: RFPercentage(2.5), 
+                width: RFPercentage(5), height: RFPercentage(5),
+                right: '5%', top: '-40%', 
+                alignItems: 'center', justifyContent: 'center',
+            }}>
+                <MyText size={5} color="ghostwhite" >{this.state.notifications}</MyText>
+            </PoppingView>
+        ) : null;
+    }
 }
 
 export default Root

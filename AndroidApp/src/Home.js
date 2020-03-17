@@ -1,24 +1,112 @@
 import React from 'react'
-import { View } from 'react-native'
-import { addWsListener, removeWsListener } from './utils'
-import styles, { FadeInView, MyText, MyButton } from './styles'
-import { useNavigationState } from '@react-navigation/native';
-
-import { createStackNavigator } from '@react-navigation/stack';
-import GamePage from "./Game";
+import { View, TouchableHighlight, ScrollView } from 'react-native'
+import { addWsListener, removeWsListener, LoadingPage, TimerDisplay } from './utils'
+import styles, { FadeInView, MyText, InlineView, GameLink, PoppingView } from './styles'
+import { RFPercentage } from "react-native-responsive-fontsize";
 
 
-const Stack = createStackNavigator();
-
-function HomePage(props) {
+/*function HomePage(props) {
   //console.log('render home '+JSON.stringify(props));
   return (
-      <View>
-          <MyText>I'm the Home</MyText>
-          <MyButton onPress={() => props.navigation.jumpTo('Game', {id: 2})} >Go game</MyButton>
-          <MyButton onPress={global.logout} >Logout</MyButton>
-      </View>
+	  <View>
+		  <MyText>I'm the Home</MyText>
+		  <MyButton onPress={() => props.navigation.jumpTo('Game', {id: 2})} >Go game</MyButton>
+		  <MyButton onPress={global.logout} >Logout</MyButton>
+	  </View>
   );
+}*/
+
+class HomePage extends React.Component {
+  constructor(props) {
+	  super(props);
+
+	  this.notificationListener = {type: "notify", f: this.onNotification, notId: null};
+	  this.homeRequest = {type: "home-page", f: this.getHome, reqId: null};
+
+	  this.state = {
+		  list: null,
+		  user: null,
+		  history: null,
+		  loading: true
+	  };
+  }
+
+  componentDidMount() {
+	  this.homeRequest.reqId = addWsListener(this.homeRequest);
+	  this.notificationListener.notId = addWsListener(this.notificationListener);
+	  this.requestPage();
+  }
+
+  requestPage = () => {
+	  global.wsSend({type: this.homeRequest.type});
+  }
+
+  getHome = (content) => {
+	  this.setState({list: content.list, history: content.history, user: content.username, loading: false});
+  }
+
+  onNotification = (content) => {
+	  this.requestPage();
+  }
+  
+  componentWillUnmount() {
+	  removeWsListener(this.homeRequest.reqId);
+	  removeWsListener(this.notificationListener.notId);
+  }
+
+  render() {
+	  if (this.state.loading)
+		  return <LoadingPage />;
+	  return (
+		<ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
+			<FadeInView>
+				<MyText bold size={1} center >Welcome {this.state.user}</MyText>
+				{this.state.list.map((match, i) => (
+					<ShowMatchLink {...match} ended={false} key={i} />
+				))}
+				<MyText bold size={2} center style={styles.topLine}>History</MyText>
+				{this.state.history.map((match, i) => (
+					<ShowMatchLink {...match} ended={true} key={i} />
+				))}
+			</FadeInView>
+		</ScrollView>
+	  );
+  }
+}
+
+function ShowMatchLink(props){
+	return(
+		<GameLink id={props.id}>
+			{props.ended ? <EndedMatchLine {...props} /> : <InMatchLine {...props} />}
+		</GameLink>
+	);
+}
+
+function InMatchLine(props){
+	// popping turn animation
+	return(
+		<FadeInView style={styles.gameBox}>
+			<InlineView>
+                <MyText bold>vs {props.vs.username}</MyText>
+                <MyText>({props.vs.category})</MyText>
+            </InlineView>
+            <InlineView>
+				<PoppingView><MyText bold center>{props.turn ? "Your turn" : null}</MyText></PoppingView>
+				<TimerDisplay time={props.time} updateTime={(new Date()).getTime()} />
+            </InlineView>
+		</FadeInView>
+	);
+}
+
+function EndedMatchLine(props){
+	return(
+		<View style={styles.gameBox}>
+			<InlineView>
+                <MyText bold>vs {props.vs}</MyText>
+                <MyText>{props.result}</MyText>
+            </InlineView>
+		</View>
+	);
 }
 
 export default HomePage;

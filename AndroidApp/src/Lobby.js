@@ -1,9 +1,8 @@
 import React from 'react'
 import { View, TouchableHighlight, ScrollView } from 'react-native'
 import { addWsListener, removeWsListener, PieceImg, LoadingPage } from './utils'
-import styles, { FadeInView, MyText, MyButton, MyPicker, InlineView } from './styles'
+import styles, { FadeInView, MyText, MyButton, MyPicker, InlineView, GameLink } from './styles'
 import { RFPercentage } from "react-native-responsive-fontsize";
-import { useNavigation } from '@react-navigation/native';
 
 
 class LobbyPage extends React.Component {
@@ -134,7 +133,7 @@ class MyLobby extends React.Component {
         if (myLobby === false && this.props.leftMatches === 0)
             return null;
         return (
-            <FadeInView style={{borderTopColor: "black", borderTopWidth: RFPercentage(0.5) }}>
+            <FadeInView style={styles.topLine}>
                 {myLobby ? 
                     <ShowMyLobby {...myLobby} /> 
                     : 
@@ -199,16 +198,11 @@ class CreateLobby extends React.Component {
     }
 }
 
-//const press = () => {navigation.jumpTo('Home', {screen: "Game", params: {id: props.id}})};
-//const press = () => {navigation.jumpTo('Home', {id: props.id})};
 function ShowLobbyLink(props){
-    // className="lobby-link"
-    const navigation = useNavigation()
-    const press = () => {navigation.jumpTo('Game', {id: props.id})};
     return(
-        <TouchableHighlight onPress={press} underlayColor="rgb(255, 255, 220)" >
+        <GameLink id={props.id}>
             <ShowLobby {...props} />
-        </TouchableHighlight>
+        </GameLink>
     );
 }
 
@@ -224,7 +218,6 @@ function ShowMyLobby(props) {
 }
 
 function ShowLobby(props) {
-    // className="lobby-box"
     let username, category, colorIcon = null, piecesText =  null;
 
     if ("black" in props) {
@@ -249,15 +242,16 @@ function ShowLobby(props) {
         timeStr = props.time / 60 + " hours";
 
     return(
-        <View style={{borderColor: 'black', borderWidth: RFPercentage(1), margin: RFPercentage(1)}} >
+        <FadeInView style={styles.gameBox} >
             <InlineView>
                 <MyText bold>{username}</MyText>
                 <MyText>({category})</MyText>
-                {colorIcon}
+            </InlineView>
+            <InlineView>
+                {colorIcon === null ? <MyText size={6}>{piecesText}</MyText> : colorIcon}
                 <MyText>{timeStr}</MyText>
             </InlineView>
-            {colorIcon === null ? <MyText size={6}>{piecesText}</MyText> : null}
-        </View>
+        </FadeInView>
     );
 }
 

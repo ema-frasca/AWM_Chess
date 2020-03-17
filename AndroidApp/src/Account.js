@@ -49,7 +49,7 @@ class AccountPage extends React.Component {
                         <MyText size={2} bold style={{marginBottom: '3%'}} >Rank: {user.category} ({user.rank})</MyText>
                         <UserEditField field="email" value={user.email} akc={this.avoidKeyboardChange} />
                         {this.state.user.google ? <GoogleIcon /> : <PasswordChange />}
-                        <MyButton onPress={global.logout} >Logout</MyButton>
+                        <MyButton onPress={global.logout} style={{marginBottom: '5%'}} >Logout</MyButton>
                     </FadeInView>
                 </KeyboardAvoidingView>
             </ScrollView>
@@ -59,8 +59,8 @@ class AccountPage extends React.Component {
 
 function GoogleIcon(props) {
     return (
-        <View >
-            <MyImage name="googleAccount" width="10%" noHeight />
+        <View style={{alignItems: 'center'}}>
+            <MyImage name="googleAccount" width={RFPercentage(20)} />
             <MyText>Google Account</MyText>
         </View>
     );
@@ -125,7 +125,7 @@ class UserEditField extends React.Component {
             btnText = "enter";
         } else {
             if (this.props.field === "email")
-                field = <MyText size={3} >Email: {this.props.value}</MyText>;
+                field = <MyText size={3} center >Email: {this.props.value}</MyText>;
             else
                 field = <MyText size={1} bold>{this.props.value}</MyText>;
         }

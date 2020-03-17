@@ -172,7 +172,7 @@ class SignupPage extends React.Component {
                         <MyButton style={styles.login.button} onPress={this.submit}>Sign up</MyButton>
                     </View>
                 </KeyboardAvoidingView>
-            {this.state.error ? <MyText style={{textAlign: 'center'}} color="red">{this.state.error}</MyText> : null }
+            {this.state.error ? <MyText center color="red">{this.state.error}</MyText> : null }
             </FadeInView>
         );
     }
