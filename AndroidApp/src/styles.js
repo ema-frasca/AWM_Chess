@@ -75,12 +75,9 @@ function MyTabBar({ state, descriptors, navigation }) {
     <View style={{ flexDirection: 'row' }}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name;
+        if (options.hidden)
+          return null;
+        const label = options.title ? options.title : route.name;
 
         const isFocused = state.index === index;
 
@@ -96,14 +93,20 @@ function MyTabBar({ state, descriptors, navigation }) {
         };
 
         return (
-          <TouchableOpacity
+          <TouchableHighlight
+            key={route.name}
             onPress={onPress}
-            style={{ flex: 1, backgroundColor: isFocused ? 'rgb(255, 249, 199)' : 'white' }}
-          >
-            <Text style={{ color: isFocused ? 'black' : 'grey' }}>
-              {label}
-            </Text>
-          </TouchableOpacity>
+            underlayColor="rgb(255, 255, 220)"
+            style={{ flex: 1, justifyContent: 'center', 
+              backgroundColor: isFocused ? 'rgb(255, 250, 200)' : 'white',
+              borderColor: 'grey',
+              borderRightWidth: 1, 
+          }}>
+            <MyText size={5} bold 
+              color={isFocused ? 'black' : 'grey'} 
+              style={{textAlign: 'center'}}>
+                {label}</MyText>
+          </TouchableHighlight>
         );
       })}
     </View>

@@ -42,7 +42,7 @@ class AccountPage extends React.Component {
         
         return (
             <ScrollView style={{paddingTop: '2%'}} keyboardShouldPersistTaps="handled">
-                <KeyboardAvoidingView keyboardVerticalOffset={-RFPercentage(7)} 
+                <KeyboardAvoidingView keyboardVerticalOffset={-RFPercentage(18)} 
                 behavior="position" enabled={this.state.avoidKeyboard}>
                     <FadeInView style={{alignItems: 'center'}}>
                         <UserEditField field="username" value={user.username} akc={this.avoidKeyboardChange} />

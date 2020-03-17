@@ -10,31 +10,15 @@ import GamePage from "./Game";
 
 const Stack = createStackNavigator();
 
-function HomeRouter(props) {
-  // console.log(JSON.stringify(props));
-  // console.log(JSON.stringify(props.navigation))
-  
-  useNavigationState(state => state);
-  console.log('home router render')
-  //const reset = () => { if (props.route.params != undefined) props.route.params.screen = "Home";}
-  
-  return (
-    <Stack.Navigator initialRouteName="Home" headerMode="none">
-      <Stack.Screen name="Home" component={HomePage} />
-      <Stack.Screen name="Game" component={GamePage} initialParams={{resetScreen: 0}} />
-    </Stack.Navigator>
-  );
-}
-
 function HomePage(props) {
   //console.log('render home '+JSON.stringify(props));
   return (
       <View>
           <MyText>I'm the Home</MyText>
-          <MyButton onPress={() => props.navigation.navigate('Game', {id: 2})} >Go game</MyButton>
+          <MyButton onPress={() => props.navigation.jumpTo('Game', {id: 2})} >Go game</MyButton>
           <MyButton onPress={global.logout} >Logout</MyButton>
       </View>
   );
 }
 
-export default HomeRouter;
+export default HomePage;

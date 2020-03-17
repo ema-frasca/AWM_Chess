@@ -7,7 +7,7 @@ import LoginRouter from './login'
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import HomeRouter from "./Home";
+import HomePage from "./Home";
 import LobbyPage from "./Lobby";
 import AccountPage from "./Account";
 import GamePage from "./Game";
@@ -107,29 +107,14 @@ function ChessHeader(props) {
 const Tab = createBottomTabNavigator();
 
 function Router(props) {
-    const options={
-        activeBackgroundColor: 'rgb(255, 249, 199)',
-        activeTintColor: 'black',
-        showIcon: false,
-        labelStyle: styles.text(5, true),
-        tabStyle: {
-            borderColor: 'grey',
-            borderRightWidth: 1,
-            justifyContent: 'center',
-
-        },
-        keyboardHidesTabBar: true,
-    };
-    const MyLabel = (title) => (props) => {
-        return <MyText size={5} bold color={props.color} style={{textAlign: 'center', lineHeight: sizeDict[4]}} >{title}</MyText>;
-    }
     return (
         <NavigationContainer>
-          <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBarOptions={options} tabBar={MyTabBar}>
-            <Tab.Screen name="Home" component={HomeRouter} />
-            <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{tabBarLabel: MyLabel('Quick Game')}} />
-            <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{tabBarLabel: MyLabel('Slow Game')}} />
+          <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBar={MyTabBar}>
+            <Tab.Screen name="Home" component={HomePage} />
+            <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{title: 'Quick Game'}} />
+            <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{title: 'Slow Game'}} />
             <Tab.Screen name="Account" component={AccountPage} />
+            <Tab.Screen name="Game" component={GamePage} options={{hidden: true}} />
           </Tab.Navigator>
         </NavigationContainer>
     );

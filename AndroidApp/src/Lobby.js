@@ -38,7 +38,7 @@ class LobbyPage extends React.Component {
         if (this.state.loading)
             return <LoadingPage />;
         if (this.quick && this.state.leftMatches === 0 && this.state.redirectId)
-            this.props.navigation.jumpTo('Home')
+            this.props.navigation.jumpTo('Game', {id: this.state.redirectId})
         return (
             <ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
                 <FadeInView>
@@ -204,9 +204,9 @@ class CreateLobby extends React.Component {
 function ShowLobbyLink(props){
     // className="lobby-link"
     const navigation = useNavigation()
-    const press = () => {navigation.jumpTo('Home', {screen: "Game", params: {id: props.id}})};
+    const press = () => {navigation.jumpTo('Game', {id: props.id})};
     return(
-        <TouchableHighlight onPress={press} underlayColor="rgb(255, 255, 240)" >
+        <TouchableHighlight onPress={press} underlayColor="rgb(255, 255, 220)" >
             <ShowLobby {...props} />
         </TouchableHighlight>
     );
