@@ -2,19 +2,7 @@ import React from 'react'
 import { View, TouchableHighlight, ScrollView } from 'react-native'
 import { addWsListener, removeWsListener, LoadingPage, TimerDisplay } from './utils'
 import styles, { FadeInView, MyText, InlineView, GameLink, PoppingView } from './styles'
-import { RFPercentage } from "react-native-responsive-fontsize";
 
-
-/*function HomePage(props) {
-  //console.log('render home '+JSON.stringify(props));
-  return (
-	  <View>
-		  <MyText>I'm the Home</MyText>
-		  <MyButton onPress={() => props.navigation.jumpTo('Game', {id: 2})} >Go game</MyButton>
-		  <MyButton onPress={global.logout} >Logout</MyButton>
-	  </View>
-  );
-}*/
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -59,7 +47,7 @@ class HomePage extends React.Component {
 		  return <LoadingPage />;
 	  return (
 		<ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
-			<FadeInView>
+			<FadeInView style={styles.bottomSpace}>
 				<MyText bold size={1} center >Welcome {this.state.user}</MyText>
 				{this.state.list.map((match, i) => (
 					<ShowMatchLink {...match} ended={false} key={i} />
@@ -88,10 +76,10 @@ function InMatchLine(props){
 		<FadeInView style={styles.gameBox}>
 			<InlineView>
                 <MyText bold>vs {props.vs.username}</MyText>
-                <MyText>({props.vs.category})</MyText>
+                <MyText>{props.vs.category}</MyText>
             </InlineView>
             <InlineView>
-				<PoppingView><MyText bold center>{props.turn ? "Your turn" : null}</MyText></PoppingView>
+				<PoppingView><MyText bold>{props.turn ? "Your turn" : null}</MyText></PoppingView>
 				<TimerDisplay time={props.time} updateTime={(new Date()).getTime()} />
             </InlineView>
 		</FadeInView>

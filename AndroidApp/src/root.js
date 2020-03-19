@@ -162,8 +162,7 @@ class NotificationPop extends React.Component {
                 position: 'absolute', backgroundColor: 'rgba(3, 99, 131, 0.5)', 
                 borderRadius: RFPercentage(2.5), 
                 width: RFPercentage(5), height: RFPercentage(5),
-                right: '5%', top: '-40%', 
-                alignItems: 'center', justifyContent: 'center',
+                right: '5%', top: '-40%',
             }}>
                 <MyText size={5} color="ghostwhite" >{this.state.notifications}</MyText>
             </PoppingView>

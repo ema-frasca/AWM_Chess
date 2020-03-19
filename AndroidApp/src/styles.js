@@ -61,12 +61,22 @@ const styles = {
 	},
 
 	button: {
-		backgroundColor: 'rgb(0, 139, 186)',
-		borderColor: 'rgb(3, 99, 131)',
-		borderWidth: RFPercentage(0.5),
-		borderRadius: RFPercentage(1.5),
-		alignItems: 'center',
-		padding: '2%', margin: '1%',
+		enabled: {
+			backgroundColor: 'rgb(0, 139, 186)',
+			borderColor: 'rgb(3, 99, 131)',
+			borderWidth: RFPercentage(0.5),
+			borderRadius: RFPercentage(1.5),
+			alignItems: 'center',
+			padding: '2%', margin: '1%',
+		},
+		disabled: {
+			backgroundColor: 'rgba(80, 110, 120, 1)',
+			borderColor: 'grey',
+			borderWidth: RFPercentage(0.5),
+			borderRadius: RFPercentage(1.5),
+			alignItems: 'center',
+			padding: '2%', margin: '1%',
+		}
 	},
 
 	gameBox: {
@@ -80,6 +90,22 @@ const styles = {
 	topLine: {
 		borderTopColor: "black", 
 		borderTopWidth: RFPercentage(0.5) 
+	},
+
+	mainView: {
+		paddingHorizontal: '2%', paddingTop: '3%',
+		paddingBottom: 200,
+	},
+
+	bottomSpace: {marginBottom: '5%'},
+
+	listView: {
+		backgroundColor: "rgba(197, 197, 193, 0.5)", 
+		borderColor: "rgba(0, 0, 0, 0.8)", 
+		borderWidth: RFPercentage(0.5),
+		borderRadius: RFPercentage(1),
+		paddingHorizontal: '2%',
+		margin: '2%',
 	}
 
 };
@@ -155,7 +181,9 @@ class PoppingView extends React.Component {
 
         this.state = {scaleValue: new Animated.Value(0)}
         this.style = {
-            flex: 1,
+			flex: 1,
+			alignItems: 'center',
+			justifyContent: 'center',
         };
     }
 
@@ -180,6 +208,8 @@ function MyText(props) {
 		color: props.color ? props.color : "black",
 		textAlign: props.center ? 'center' : null,
 	};
+	if (props.flex)
+		style.flex = props.flex;
 	return (
 		<Text {...props} style={[style, styles.text(props.size, props.bold), props.style]} >
 			{props.children}
@@ -204,9 +234,10 @@ function MyTextInput(props) {
 
 function MyButton(props) {
 	const hSize = props.size ? props.size : 4;
+	const style = props.disabled ? styles.button.disabled : styles.button.enabled; 
 	return (
-		<TouchableHighlight {...props} style={[styles.button, props.style]} underlayColor="rgb(70, 163, 194)" activeOpacity={0.5} >
-			<MyText size={hSize} color="white" >{props.children}</MyText>
+		<TouchableHighlight {...props} style={[style, props.style]} underlayColor="rgb(70, 163, 194)" activeOpacity={0.5} >
+			<MyText size={hSize} color={props.disabled ? "#b7b7b7" : "white"} >{props.children}</MyText>
 		</TouchableHighlight>
 	);
 }
@@ -251,7 +282,7 @@ function MyPicker(props){
 
 function InlineView(props) {
 	return(
-		<View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+		<View style={[{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}, props.style]}>
 			{props.children}
 		</View>
 	);

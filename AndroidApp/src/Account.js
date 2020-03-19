@@ -41,15 +41,15 @@ class AccountPage extends React.Component {
         const user = this.state.user;
         
         return (
-            <ScrollView style={{paddingTop: '2%'}} keyboardShouldPersistTaps="handled">
-                <KeyboardAvoidingView keyboardVerticalOffset={-RFPercentage(18)} 
+            <ScrollView style={styles.mainView} keyboardShouldPersistTaps="handled">
+                <KeyboardAvoidingView keyboardVerticalOffset={-RFPercentage(24)} 
                 behavior="position" enabled={this.state.avoidKeyboard}>
-                    <FadeInView style={{alignItems: 'center'}}>
+                    <FadeInView style={[{alignItems: 'center'}, styles.bottomSpace]}>
                         <UserEditField field="username" value={user.username} akc={this.avoidKeyboardChange} />
                         <MyText size={2} bold style={{marginBottom: '3%'}} >Rank: {user.category} ({user.rank})</MyText>
                         <UserEditField field="email" value={user.email} akc={this.avoidKeyboardChange} />
                         {this.state.user.google ? <GoogleIcon /> : <PasswordChange />}
-                        <MyButton onPress={global.logout} style={{marginBottom: '5%'}} >Logout</MyButton>
+                        <MyButton onPress={global.logout} >Logout</MyButton>
                     </FadeInView>
                 </KeyboardAvoidingView>
             </ScrollView>

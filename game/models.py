@@ -124,7 +124,7 @@ class Match(models.Model):
             return [self.pgn]
         from re import split as resplit
         moves, result = self.pgn.rsplit(' ', 1)
-        mlist = resplit('\d+\.', moves)
+        mlist = resplit('\d+\.', moves.replace('\n', ' '))
         mlist.remove('')
         for i, move in enumerate(mlist, start=1):
             mlist[i-1] = str(i) + '.' + move

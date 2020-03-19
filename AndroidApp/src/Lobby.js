@@ -39,8 +39,8 @@ class LobbyPage extends React.Component {
         if (this.quick && this.state.leftMatches === 0 && this.state.redirectId)
             this.props.navigation.jumpTo('Game', {id: this.state.redirectId})
         return (
-            <ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
-                <FadeInView>
+            <ScrollView style={styles.mainView}>
+                <FadeInView style={styles.bottomSpace}>
                     {this.state.leftMatches ? <Lobbies quick={this.quick} /> : <CapReach quick={this.quick} />}
                     <MyLobby leftMatches={this.state.leftMatches} quick={this.quick} />
                 </FadeInView>
@@ -245,7 +245,7 @@ function ShowLobby(props) {
         <FadeInView style={styles.gameBox} >
             <InlineView>
                 <MyText bold>{username}</MyText>
-                <MyText>({category})</MyText>
+                <MyText>{category}</MyText>
             </InlineView>
             <InlineView>
                 {colorIcon === null ? <MyText size={6}>{piecesText}</MyText> : colorIcon}

@@ -22,7 +22,7 @@ function MyImage(props){
   }
 
 const piecesDict = {
-    empty: "empty.png",
+    empty: require("../assets/sprites/empty.png"),
     k: require("../assets/sprites/black_king.png"),
     q: require("../assets/sprites/black_queen.png"),
     b: require("../assets/sprites/black_bishop.png"),
@@ -38,8 +38,11 @@ const piecesDict = {
 }
 
 function PieceImg(props) {
-    const width = props.icon ? '15%' : '100%';
-    return <Image style={{height: '100%', width: width, resizeMode: 'contain'}} source={piecesDict[props.piece]} />;
+    const style = {
+        height: '100%', width: undefined, 
+        aspectRatio: 1, resizeMode: 'contain'
+    };
+    return <Image style={style} source={piecesDict[props.piece]} />;
 }
 
 class LoadingScreen extends React.Component {
@@ -178,7 +181,7 @@ class TimerDisplay extends React.Component {
         const time = Math.max(0, this.state.time)
         if (time === 0)
             global.wsSend({"type": "times-check"});
-        return <MyText>{displayTime(time)}</MyText>;
+        return <MyText flex={1} center>{displayTime(time)}</MyText>;
     }
 }
 

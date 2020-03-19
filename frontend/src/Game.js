@@ -69,9 +69,9 @@ function EndedGame(props){
     return(
         <div>
         <div className='game-container'>
-            <UserResult user={props.match.black} result={msgLines.black} piece="k" turn={!props.match.whiteTurn}/>
+            <UserResult user={props.match.black} result={msgLines.black} piece="k"/>
             <ChessBoard board={props.board} moves={{}} id={props.id} whiteTurn={false}/>
-            <UserResult user={props.match.white} result={msgLines.white} piece="K" turn={props.match.whiteTurn}/>
+            <UserResult user={props.match.white} result={msgLines.white} piece="K"/>
         </div>
         <MovesList pgn={props.match.pgn}/>
         <ResultReason result={props.result} reason={props.match.reason} />
