@@ -1,66 +1,70 @@
 import React from 'react'
 import { View, ScrollView } from 'react-native'
-import { addWsListener, removeWsListener, LoadingPage, TimerDisplay, ExpoNotification } from './utils'
+import { addWsListener, removeWsListener, LoadingPage, TimerDisplay } from './utils'
 import styles, { FadeInView, MyText, InlineView, GameLink, PoppingView } from './styles'
 
 
 class HomePage extends React.Component {
-  constructor(props) {
-	  super(props);
+	constructor(props) {
+		super(props);
 
-	  this.notificationListener = {type: "notify", f: this.onNotification, notId: null};
-	  this.homeRequest = {type: "home-page", f: this.getHome, reqId: null};
+		this.notificationListener = {type: "notify", f: this.onNotification, notId: null};
+		this.homeRequest = {type: "home-page", f: this.getHome, reqId: null};
 
-	  this.state = {
-		  list: null,
-		  user: null,
-		  history: null,
-		  loading: true
-	  };
-  }
+		this.state = {
+			list: null,
+			user: null,
+			history: null,
+			loading: true
+		};
 
-  componentDidMount() {
-	  this.homeRequest.reqId = addWsListener(this.homeRequest);
-	  this.notificationListener.notId = addWsListener(this.notificationListener);
-	  this.requestPage();
-  }
+		Notifications.addListener((notification) => {
+			if (notification.origin === 'selected') 
+				this.props.navigation.jumpTo('Game', {id: notification.data.id});
+		});
+	}
 
-  requestPage = () => {
-	  global.wsSend({type: this.homeRequest.type});
-  }
+	componentDidMount() {
+		this.homeRequest.reqId = addWsListener(this.homeRequest);
+		this.notificationListener.notId = addWsListener(this.notificationListener);
+		this.requestPage();
+	}
 
-  getHome = (content) => {
-	  this.setState({list: content.list, history: content.history, user: content.username, loading: false});
-  }
+	requestPage = () => {
+		global.wsSend({type: this.homeRequest.type});
+	}
 
-  onNotification = (content) => {
-	  this.requestPage();
-  }
-  
-  componentWillUnmount() {
-	  removeWsListener(this.homeRequest.reqId);
-	  removeWsListener(this.notificationListener.notId);
-  }
+	getHome = (content) => {
+		this.setState({list: content.list, history: content.history, user: content.username, loading: false});
+	}
 
-  render() {
-	  if (this.state.loading)
-		  return <LoadingPage />;
-	  return (
-		<ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
-			<ExpoNotification />
-			<FadeInView style={styles.bottomSpace}>
-				<MyText bold size={1} center >Welcome {this.state.user}</MyText>
-				{this.state.list.map((match, i) => (
-					<ShowMatchLink {...match} ended={false} key={i} />
-				))}
-				<MyText bold size={2} center style={styles.topLine}>History</MyText>
-				{this.state.history.map((match, i) => (
-					<ShowMatchLink {...match} ended={true} key={i} />
-				))}
-			</FadeInView>
-		</ScrollView>
-	  );
-  }
+	onNotification = (content) => {
+		this.requestPage();
+	}
+	
+	componentWillUnmount() {
+		removeWsListener(this.homeRequest.reqId);
+		removeWsListener(this.notificationListener.notId);
+	}
+
+	render() {
+		if (this.state.loading)
+			return <LoadingPage />;
+		return (
+			<ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
+				<FadeInView style={styles.bottomSpace}>
+					<MyText bold size={1} center >Welcome {this.state.user}</MyText>
+					{this.state.list.map((match, i) => (
+						<ShowMatchLink {...match} ended={false} key={i} />
+					))}
+					<MyText bold size={2} center style={styles.topLine}>History</MyText>
+					{this.state.history.map((match, i) => (
+						<ShowMatchLink {...match} ended={true} key={i} />
+					))}
+				</FadeInView>
+			</ScrollView>
+		);
+	}
 }
 
 function ShowMatchLink(props){
