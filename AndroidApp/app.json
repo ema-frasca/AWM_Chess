@@ -26,6 +26,6 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": ""
+    "description": "This is a coursework of University of Modena and Reggio Emilia. It is a mobile (and browser) application to play chess online. You have to use also the backend on GitHub, made with django. More information on GitHub readme.md"
   }
 }

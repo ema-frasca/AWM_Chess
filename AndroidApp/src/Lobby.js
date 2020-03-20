@@ -1,8 +1,7 @@
 import React from 'react'
-import { View, TouchableHighlight, ScrollView } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { addWsListener, removeWsListener, PieceImg, LoadingPage } from './utils'
 import styles, { FadeInView, MyText, MyButton, MyPicker, InlineView, GameLink } from './styles'
-import { RFPercentage } from "react-native-responsive-fontsize";
 
 
 class LobbyPage extends React.Component {

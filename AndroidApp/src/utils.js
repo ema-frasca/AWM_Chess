@@ -1,7 +1,9 @@
 import React from "react";
 import { Text, Image, View, Animated, Button, AsyncStorage } from 'react-native';
+import { Notifications } from 'expo'
 
 import styles, { MyText, MyTextInput, InlineView } from './styles'
+import { useNavigation } from '@react-navigation/native';
 
 
 const imgs = {
@@ -203,7 +205,19 @@ class TimerDisplay extends React.Component {
     }
 }
 
+function ExpoNotification(props) {
+    const navigation = useNavigation();
+    Notifications.addListener((notification) => {
+        if (notification.origin === 'selected') {
+            console.log('dovrebbe andare '+ notification.data.id);
+            navigation.jumpTo('Game', {id: notification.data.id});
+        }
+    });
+    
+    return null;
+}
+
 export { 
     LoadingScreen, LoadingPage, MyImage, addWsListener, removeWsListener, 
-    PieceImg, displayTime, TimerDisplay, imgs
+    PieceImg, displayTime, TimerDisplay, imgs, ExpoNotification
  };

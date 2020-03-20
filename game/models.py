@@ -50,6 +50,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,)
     # starting rank at 1200, treshold of novices
     rank = models.IntegerField(default=1200)
+    expo_token = models.CharField(max_length=200, default="")
 
     def category(self):
         for limit, cat in rank_dict:

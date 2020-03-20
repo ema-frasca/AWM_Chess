@@ -1,13 +1,14 @@
 import React from 'react'
-import { View, Text, ImageBackground, AsyncStorage, Button  } from 'react-native'
+import { Notifications } from 'expo'
+import { View, Text, ImageBackground, AsyncStorage,  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
 import styles, { FadeInView, MyText, MyTabBar, PoppingView } from './styles'
 import { RFPercentage } from "react-native-responsive-fontsize";
-import LoginRouter from './login'
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import LoginRouter from './login'
 import HomePage from "./Home";
 import LobbyPage from "./Lobby";
 import AccountPage from "./Account";
@@ -34,9 +35,11 @@ class Root extends React.Component {
         });
     }
 
-    firstLogin = (token) => {
+    firstLogin = async (token) => {
         AsyncStorage.setItem('tokenWS', token);
-        this.setState({token: token})
+        this.setState({token: token});
+        expoToken = await Notifications.getExpoPushTokenAsync();
+        global.wsSend({type: "expo-token", token: expoToken});
     }
 
     logout = () => {
@@ -110,13 +113,13 @@ const Tab = createBottomTabNavigator();
 function Router(props) {
     return (
         <NavigationContainer>
-          <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBar={MyTabBar}>
-            <Tab.Screen name="Home" component={HomePage} options={{icon: <NotificationPop />}} />
-            <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{title: 'Quick Game'}} />
-            <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{title: 'Slow Game'}} />
-            <Tab.Screen name="Account" component={AccountPage} />
-            <Tab.Screen name="Game" component={GamePage} options={{hidden: true}} />
-          </Tab.Navigator>
+            <Tab.Navigator initialRouteName="Home" screenOptions={{unmountOnBlur: true}} tabBar={MyTabBar}>
+                <Tab.Screen name="Home" component={HomePage} options={{icon: <NotificationPop />}} />
+                <Tab.Screen name="Quick" component={LobbyPage} initialParams={{ quick: true }} options={{title: 'Quick Game'}} />
+                <Tab.Screen name="Slow" component={LobbyPage} initialParams={{ quick: false }} options={{title: 'Slow Game'}} />
+                <Tab.Screen name="Account" component={AccountPage} />
+                <Tab.Screen name="Game" component={GamePage} options={{hidden: true}} />
+            </Tab.Navigator>
         </NavigationContainer>
     );
 }
@@ -165,6 +168,7 @@ class NotificationPop extends React.Component {
                 right: '5%', top: '-40%',
             }}>
                 <MyText size={5} color="ghostwhite" >{this.state.notifications}</MyText>
+                <ExpoNotification />
             </PoppingView>
         ) : null;
     }

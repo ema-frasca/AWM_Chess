@@ -1,6 +1,6 @@
 import React from 'react'
-import { View, TouchableHighlight, ScrollView } from 'react-native'
-import { addWsListener, removeWsListener, LoadingPage, TimerDisplay } from './utils'
+import { View, ScrollView } from 'react-native'
+import { addWsListener, removeWsListener, LoadingPage, TimerDisplay, ExpoNotification } from './utils'
 import styles, { FadeInView, MyText, InlineView, GameLink, PoppingView } from './styles'
 
 
@@ -47,6 +47,7 @@ class HomePage extends React.Component {
 		  return <LoadingPage />;
 	  return (
 		<ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
+			<ExpoNotification />
 			<FadeInView style={styles.bottomSpace}>
 				<MyText bold size={1} center >Welcome {this.state.user}</MyText>
 				{this.state.list.map((match, i) => (
