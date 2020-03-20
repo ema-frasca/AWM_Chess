@@ -208,10 +208,8 @@ class TimerDisplay extends React.Component {
 function ExpoNotification(props) {
     const navigation = useNavigation();
     Notifications.addListener((notification) => {
-        if (notification.origin === 'selected') {
-            console.log('dovrebbe andare '+ notification.data.id);
+        if (notification.origin === 'selected') 
             navigation.jumpTo('Game', {id: notification.data.id});
-        }
     });
     
     return null;
