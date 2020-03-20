@@ -11,3 +11,9 @@ Then activate it
 And install requirements
 
     pip install -r AWM_Chess\requirements.txt
+
+Run django server on local ip with:
+
+    python manage.py runserver [your-ip:port]
+
+Download app with expo app: https://expo.io/@emafrasca/awm-chess 
