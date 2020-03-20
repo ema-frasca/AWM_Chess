@@ -1,6 +1,6 @@
 # AWM_Chess
  
-To set up a virtual environment on Windows run (in Anaconda Prompt)
+To set up a virtual environment:
 
     python -m venv venv
     venv\Scripts\activate.bat
@@ -11,4 +11,5 @@ Run django server on local ip with:
     python manage.py runserver [your-ip:port]
 
 Download app with expo app: https://expo.io/@emafrasca/awm-chess 
+
 In the loading screen insert [your-ip:port] of your django server
