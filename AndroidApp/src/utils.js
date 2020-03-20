@@ -1,7 +1,7 @@
 import React from "react";
-import { Text, Image, View, Animated } from 'react-native';
+import { Text, Image, View, Animated, Button, AsyncStorage } from 'react-native';
 
-import styles, { MyText } from './styles'
+import styles, { MyText, MyTextInput, InlineView } from './styles'
 
 
 const imgs = {
@@ -50,7 +50,8 @@ class LoadingScreen extends React.Component {
         super(props);
 
         this.state = {
-            loading: true
+            loading: true,
+            host: global.host,
         };
 
         this.style = {
@@ -60,6 +61,7 @@ class LoadingScreen extends React.Component {
             alignItems: 'center',
             justifyContent: 'center',
         };
+        this.development = true;
     }
 
     componentDidMount() {
@@ -68,10 +70,11 @@ class LoadingScreen extends React.Component {
     }
 
     wsChange = () => {
-        if (global.ws)
-            this.setState({loading: false})
-        else
-            this.setState({loading: true})
+        if (global.ws){
+            this.setState({loading: false});
+            AsyncStorage.setItem('wsHost', global.host);
+        } else
+            this.setState({loading: true});
     }
 
     componentWillUnmount() {
@@ -79,11 +82,26 @@ class LoadingScreen extends React.Component {
     }
 
     render () {
+        const hostStyle = {
+            position: 'absolute',
+            top: '5%',
+            width: '95%'
+
+        };
         if (this.state.loading)
             return (
                 <View style={this.style}>
                     <LoadingImage />
                     <Text>Loading...</Text>
+                    {this.development ? (
+                        <InlineView style={hostStyle}>
+                            <MyTextInput style={{width: '75%'}}
+                                value={this.state.host}
+                                onChangeText={(text) => this.setState({host: text})}
+                            />
+                            <Button title="connect" onPress={() => global.host = this.state.host} />
+                        </InlineView>
+                    ) : null}
                 </View>
             );
         else

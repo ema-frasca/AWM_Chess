@@ -28,20 +28,20 @@ class Root extends React.Component {
     }
 
     getToken = () => {
-        AsyncStorage.getItem('token', (err, result) => {
+        AsyncStorage.getItem('tokenWS', (err, result) => {
             this.setState({token: result})
             this.tryTokenLogin();
         });
     }
 
     firstLogin = (token) => {
-        AsyncStorage.setItem('token', token);
+        AsyncStorage.setItem('tokenWS', token);
         this.setState({token: token})
     }
 
     logout = () => {
         global.wsSend({type: "logout"});
-        AsyncStorage.removeItem('token');
+        AsyncStorage.removeItem('tokenWS');
         this.setState({token: null, authenticated: false});
     }
 

@@ -1,8 +1,4 @@
 
-global.static = "/static/";
-global.imgs = global.static + "imgs/";
-global.sprites = global.static + "sprites/";
-
 // WebSocket
 global.ws = null;
 
@@ -15,8 +11,7 @@ global.wsOnMessage = new Map();
 
 let timeout = 250;
 
-global.host = true ? "192.168.1.108:8000" : "192.168.1.235:8000";
-connect();
+global.host = "127.0.0.1:8000";
 
 function changeWS(ws) {
     global.ws = ws;
@@ -79,3 +74,4 @@ function check() {
         connect();
 }
 
+export { connect };
