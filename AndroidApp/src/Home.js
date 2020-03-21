@@ -29,6 +29,8 @@ class HomePage extends React.Component {
 		if (! global.notListener){
 			global.notListener = true;
 			Notifications.addListener((notification) => {
+				if (notification.origin === 'received') 
+					Notifications.dismissNotificationAsync(notification.notificationId);
 				if (notification.origin === 'selected') 
 					this.props.navigation.jumpTo('Game', {id: notification.data.id});
 			});
