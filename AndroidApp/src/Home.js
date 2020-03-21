@@ -1,7 +1,9 @@
 import React from 'react'
 import { View, ScrollView } from 'react-native'
+import { Notifications } from 'expo'
 import { addWsListener, removeWsListener, LoadingPage, TimerDisplay } from './utils'
 import styles, { FadeInView, MyText, InlineView, GameLink, PoppingView } from './styles'
+
 
 
 class HomePage extends React.Component {
