@@ -58,6 +58,10 @@ class MainConsumer(JsonWebsocketConsumer):
         msg["sender"] = self.channel_name   
         async_to_sync(self.channel_layer.group_send)(str(opponent.id), msg)
 
+    def expo_notify(self, match, msg_type):
+        opponent = match.versus(self.user)
+        opponent.profile.expo_notify(msg_type, match.pk)
+
     def message_myself(self, msg):
         msg["sender"] = self.channel_name   
         async_to_sync(self.channel_layer.group_send)(str(self.user.id), msg)
@@ -74,10 +78,11 @@ class MainConsumer(JsonWebsocketConsumer):
     def notify(self, msg):
         self.send_json(msg)
 
-    def match_notify(self, match):
+    def match_notify(self, match, msg_type):
         msg = {"type": "notify", "id": match.pk}
         self.message_myself(msg)
         self.message_opponent(match, msg)
+        self.expo_notify(match, msg_type)
 
     def home_page(self, msg=None):
         if not self.times_check():
@@ -209,8 +214,8 @@ class MainConsumer(JsonWebsocketConsumer):
             self.message_opponent(match, {"type": "get.my.lobby", "quick": match.quick})
             self.create_board(msg)
             self.message_opponent(match, {"type": "create.board", "id": match.pk})
+            self.match_notify(match, 'start')
         
-        self.match_notify(match)
         return match
 
     def game_page(self, msg):
@@ -313,7 +318,7 @@ class MainConsumer(JsonWebsocketConsumer):
             self.game_end(match)
             return
 
-        self.match_notify(match)
+        self.match_notify(match, 'move')
     
     def game_resign(self, msg):
         match = self.game_check(msg["id"], "resign")
@@ -382,7 +387,7 @@ class MainConsumer(JsonWebsocketConsumer):
             match.black.profile.update_rank(distance)
             match.white.profile.update_rank(-distance)
 
-        self.match_notify(match)
+        self.match_notify(match, 'end')
 
 
 class MobileConsumer(MainConsumer):

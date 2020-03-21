@@ -19,17 +19,20 @@ class HomePage extends React.Component {
 			history: null,
 			loading: true
 		};
-
-		Notifications.addListener((notification) => {
-			if (notification.origin === 'selected') 
-				this.props.navigation.jumpTo('Game', {id: notification.data.id});
-		});
 	}
 
 	componentDidMount() {
 		this.homeRequest.reqId = addWsListener(this.homeRequest);
 		this.notificationListener.notId = addWsListener(this.notificationListener);
 		this.requestPage();
+
+		if (! global.notListener){
+			global.notListener = true;
+			Notifications.addListener((notification) => {
+				if (notification.origin === 'selected') 
+					this.props.navigation.jumpTo('Game', {id: notification.data.id});
+			});
+		}
 	}
 
 	requestPage = () => {

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Notifications } from 'expo'
+import * as Permissions from 'expo-permissions';
 import { View, Text, ImageBackground, AsyncStorage,  } from 'react-native'
 import { imgs, LoadingPage, addWsListener, removeWsListener } from './utils'
 import styles, { FadeInView, MyText, MyTabBar, PoppingView } from './styles'
@@ -38,6 +39,10 @@ class Root extends React.Component {
     firstLogin = async (token) => {
         AsyncStorage.setItem('tokenWS', token);
         this.setState({token: token});
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        if (status !== 'granted') {
+            return;
+        }
         expoToken = await Notifications.getExpoPushTokenAsync();
         global.wsSend({type: "expo-token", token: expoToken});
     }
@@ -168,7 +173,6 @@ class NotificationPop extends React.Component {
                 right: '5%', top: '-40%',
             }}>
                 <MyText size={5} color="ghostwhite" >{this.state.notifications}</MyText>
-                <ExpoNotification />
             </PoppingView>
         ) : null;
     }

@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
 from datetime import timedelta
+from game.expo import send_push_notification
 
 # https://docs.djangoproject.com/en/3.0/topics/db/models/
 
@@ -75,6 +76,16 @@ class Profile(models.Model):
             "username" : self.user.username,
             "category" : self.category(),
         }
+    
+    def expo_notify(self, msg_type, game_id):
+        if self.expo_token:
+            msg = {
+                'start': f"Started match vs {self.user.username}",
+                'move': f"{self.user.username} made their move",
+                'end': f"Your match vs {self.user.username} ended",
+            }
+            send_push_notification(self.expo_token, msg[msg_type], {'id': game_id})
+        
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
