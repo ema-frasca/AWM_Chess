@@ -8,8 +8,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
-const ANDROID_CLIENT_ID = "130753714497-0qvqmt1ttieljn4uc5crakpdur66ptop.apps.googleusercontent.com"
-
 
 const Stack = createStackNavigator();
 
@@ -30,7 +28,7 @@ class LoginPage extends React.Component {
     }
 
   googleLogin = async() => {
-    const result = await logInAsync({androidClientId: ANDROID_CLIENT_ID});
+    const result = await logInAsync({androidClientId: global.ANDROID_CLIENT_ID});
 
     if (result.type === "success"){
         global.wsSend({"type": "login-social", "token": result.accessToken});

@@ -13,6 +13,9 @@ let timeout = 250;
 
 global.host = "127.0.0.1:8000";
 
+import { ANDROID_CLIENT_ID } from '../parameters'
+global.ANDROID_CLIENT_ID = ANDROID_CLIENT_ID
+
 function changeWS(ws) {
     global.ws = ws;
     global.wsOnStateChange.forEach((f) => f());

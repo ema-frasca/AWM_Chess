@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
+import os, json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +25,17 @@ SECRET_KEY = 'k%3!y@!uxwz%4(7hb5&(wc$k_g22-zj6m_$bprgkaubr%t3#9q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.235', '192.168.1.108', 'localhost', '127.0.0.1']
+
+if not os.path.exists('parameters.json'):
+    os.rename('parameters_rename.json', 'parameters.json')
+else:
+    print('file exist')
+
+with open('parameters.json', 'r') as p:
+    variables = json.load(p)
+
+
+ALLOWED_HOSTS = variables["ALLOWED_HOSTS"]
 
 
 # Application definition
@@ -148,8 +158,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '130753714497-sisg91s22vjohk1sr9gl1k668bpji3io.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'sl_Jkw7xAHOWuh6N7vhj5OYo'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = variables["SOCIAL_AUTH_GOOGLE_OAUTH2_KEY"]
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = variables["SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET"]
 
 LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'
