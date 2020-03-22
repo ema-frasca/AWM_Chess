@@ -28,8 +28,6 @@ DEBUG = True
 
 if not os.path.exists('parameters.json'):
     os.rename('parameters_rename.json', 'parameters.json')
-else:
-    print('file exist')
 
 with open('parameters.json', 'r') as p:
     variables = json.load(p)
