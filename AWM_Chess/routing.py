@@ -1,4 +1,4 @@
-# mysite/routing.py
+# Channels equivalent of urls.py
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 import game.routing

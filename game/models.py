@@ -9,6 +9,7 @@ from game.expo import send_push_notification
 # https://docs.djangoproject.com/en/3.0/topics/db/models/
 
 
+# our rank categorization, based on the official ELO
 rank_dict = [
     (1200, "Novice"),
     (1400, "Class D"),
@@ -22,11 +23,13 @@ rank_dict = [
     (5000, "Grand Master"),
 ]
 
+# our time options: in hours for slow and in minutes for quick
 match_times = {
     "slow": [12, 18, 24],
     "quick": [15, 30, 45, 60],
 }
 
+# get timedelta() object from option (one of the above)
 def get_deltatime(quick, time_value):
     if (quick and time_value in match_times["quick"]):
         return timedelta(minutes=time_value)
@@ -34,6 +37,7 @@ def get_deltatime(quick, time_value):
         return timedelta(hours=time_value)
     return None
 
+# colors options
 colors = ["random", "white", "black"]
 
 def get_options(quick):
@@ -42,8 +46,10 @@ def get_options(quick):
     options["unit"] = ("minutes" if quick else "hours")
     return options
 
+# maximum number of concurrent games (divided per type)
 match_caps = {"slow": 3, "quick": 1}
 
+# return number (int) of minutes from timedelta() object
 def minutes(td):
     return int(td.total_seconds() / 60)
 
@@ -51,6 +57,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,)
     # starting rank at 1200, treshold of novices
     rank = models.IntegerField(default=1200)
+    # token used for push notification on mobile
     expo_token = models.CharField(max_length=200, default="")
 
     def category(self):
@@ -59,12 +66,10 @@ class Profile(models.Model):
                 return cat
         return "Unclassified"
 
+    # offical formula to update the rank
     def update_rank(self, distance, win=0, loss=0):
         self.rank = self.rank + 16 * (win - loss + distance / 400)
         self.save()
-    
-    def get_notifications(self):
-        return 2
     
     def left_matches(self, quick):
         n = Match.user_matches(self.user).exclude(endedmatch__isnull=False).filter(quick=quick).count()
@@ -86,7 +91,7 @@ class Profile(models.Model):
             }
             send_push_notification(self.expo_token, msg[msg_type], {'id': game_id})
         
-
+# create automatically a Profile when a user sign up
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -109,8 +114,10 @@ class Match(models.Model):
     )
     quick = models.BooleanField()
     chosen_time = models.DurationField()
+    # official pgn: moves list (used also to recreate the chess.Board())
     pgn = models.CharField(max_length=2000, default="*")
 
+    # main function to change the type of match child
     def transfer(self, new):
         self.delete(keep_parents=True)
         new.__dict__.update(new.match_ptr.__dict__)
@@ -179,6 +186,7 @@ class Lobby(Match):
 
         return self.start()
 
+    # from Lobby to InMatch/QuickMatch
     def start(self):
         new = InMatch(match_ptr=self.match_ptr)
         new = self.transfer(new)
@@ -221,6 +229,7 @@ class Lobby(Match):
 
 class EndedMatch(Match):
     result = models.CharField(max_length=10, default="*")
+    # official fen: board situation at the end of the match
     last_fen = models.CharField(max_length=70, default="")
     end_reason = models.CharField(max_length=50, default="")
     end_date = models.DateTimeField(default=now)
@@ -259,7 +268,7 @@ class EndedMatch(Match):
         else:
             return self.result + " won"
 
-# SlowMatch
+# SlowMatch (but used also by QuickMatch)
 class InMatch(Match):
     white_turn = models.BooleanField(default=True)
     last_move = models.DateTimeField(default=now)

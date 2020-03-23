@@ -2,6 +2,8 @@ from django.urls import path, re_path
 
 from . import views
 
+# these paths let the react client to work even when the user refresh the page
+
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     path('quick', views.HomeView.as_view(), name='quick'),

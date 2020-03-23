@@ -7,12 +7,7 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-# useless
-def index(request):
-    if (request.user.is_authenticated):
-        return redirect('home')
-    return redirect('login')
-
+# Views for user registration
 class UserCreateView(FormView):
     form_class = UserCreationForm
     success_url = reverse_lazy('signup_done')

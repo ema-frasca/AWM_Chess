@@ -6,6 +6,7 @@ from django.utils.timezone import now
 import jwt
 
 
+# Main consumer, used for web client
 class MainConsumer(JsonWebsocketConsumer):
 
     def connect(self):
@@ -47,6 +48,7 @@ class MainConsumer(JsonWebsocketConsumer):
             if content["type"] == r["type"]:
                 r["f"](content)
         
+    # recreate the chess.Board() of the ongoing games
     def load_games(self):
         from io import StringIO
         matches = InMatch.user_matches(self.user)
@@ -58,10 +60,12 @@ class MainConsumer(JsonWebsocketConsumer):
         msg["sender"] = self.channel_name   
         async_to_sync(self.channel_layer.group_send)(str(opponent.id), msg)
 
+    # push notification to mobile
     def expo_notify(self, match, msg_type):
         opponent = match.versus(self.user)
         opponent.profile.expo_notify(msg_type, match.pk)
 
+    # used to update all my connected clients when I do something
     def message_myself(self, msg):
         msg["sender"] = self.channel_name   
         async_to_sync(self.channel_layer.group_send)(str(self.user.id), msg)
@@ -165,6 +169,7 @@ class MainConsumer(JsonWebsocketConsumer):
         
         self.send_json(content)
     
+    # return 5 random lobbies
     def get_lobbies(self, msg):
         content = msg
         lobbies = Lobby.user_matches(self.user, False).filter(quick=msg["quick"]).order_by('?')[:5]
@@ -203,7 +208,8 @@ class MainConsumer(JsonWebsocketConsumer):
         self.get_my_lobby(msg)
     
     def create_board(self, msg):
-        self.games[msg["id"]] = chess.Board()
+        if msg["sender"] != self.channel_name:
+            self.games[msg["id"]] = chess.Board()
 
     def start_game(self, msg):
         lobby = Lobby.get_or_none(msg["id"])
@@ -212,8 +218,10 @@ class MainConsumer(JsonWebsocketConsumer):
         match = lobby.join_match(self.user)
         if match:
             self.message_opponent(match, {"type": "get.my.lobby", "quick": match.quick})
-            self.create_board(msg)
-            self.message_opponent(match, {"type": "create.board", "id": match.pk})
+            msg = {"type": "create.board", "id": match.pk}
+            self.message_myself(msg)
+            self.games[msg["id"]] = chess.Board()
+            self.message_opponent(match, msg)
             self.match_notify(match, 'start')
         
         return match
@@ -246,6 +254,7 @@ class MainConsumer(JsonWebsocketConsumer):
                 return
             content["board"] = self.games[match.pk].board_fen()
             if match.user_has_turn(self.user):
+                # example: moves = {'e2': {'e4':[], 'e5': []} 'f7': {'f8': ['q', 'r']}} 
                 moves = {move.uci()[:2]: {} for move in self.games[match.pk].legal_moves}
                 for move in self.games[match.pk].legal_moves:
                     if move.uci()[2:4] not in moves[move.uci()[:2]]:
@@ -277,21 +286,28 @@ class MainConsumer(JsonWebsocketConsumer):
                 flag = False
         return flag
         
+    # check if a move is valid in a given match
     def game_check(self, id, move):
         match = InMatch.get_or_none(id)
+        # check match exists
         if not match:
             return None
         if match.quick:
             match = match.quickmatch
+        # check match time is not exceeded limits
         if not self.times_check({"match": match}):
             return None
+        # if resign check the user is inside the match
         if move == "resign":
             return (match if match.has_user(self.user) else None)
+        # otherwise check if user is in his turn
         if not match.user_has_turn(self.user):
             return None
+        # if draw claim check if user can do it 
         if move == "claim":
             return (match if self.games[match.pk].can_claim_draw() else None)
 
+        # check if move is valid
         return (match if move in [move.uci() for move in self.games[match.pk].legal_moves] else None)
 
     def game_move(self, msg):
@@ -299,11 +315,13 @@ class MainConsumer(JsonWebsocketConsumer):
         if not match:
             return
 
+        # update Board
         msg["type"] = "board.push"
         self.message_opponent(match, msg)
         self.message_myself(msg)
         self.games[msg["id"]].push_uci(msg["move"])
         
+        # update db model
         if match.quick:
             if match.white_turn:
                 match.white_time += now() - match.last_move
@@ -376,6 +394,7 @@ class MainConsumer(JsonWebsocketConsumer):
         self.message_myself(msg)
         self.message_opponent(match, msg)
 
+        # update ranks
         distance = match.white.profile.rank - match.black.profile.rank
         if result == "White":
             match.white.profile.update_rank(-distance, win=1)
@@ -389,7 +408,7 @@ class MainConsumer(JsonWebsocketConsumer):
 
         self.match_notify(match, 'end')
 
-
+# mobile consumer, inherits everything from MainConsumer
 class MobileConsumer(MainConsumer):
     def connect(self):
         self.accept()
@@ -414,9 +433,11 @@ class MobileConsumer(MainConsumer):
         if self.user:
             super().disconnect(close_code)
 
+    # login through jwt token
     def login_token(self, msg):
         from django.conf.global_settings import SECRET_KEY
         from django.contrib.auth.models import User
+        # str encode to binary:
         token = msg["token"].encode()
         user_obj = jwt.decode(token, SECRET_KEY)
         try:
@@ -429,6 +450,7 @@ class MobileConsumer(MainConsumer):
     def generate_token(self, user):
         from django.conf.global_settings import SECRET_KEY
         token = jwt.encode({"pk": user.pk}, SECRET_KEY)
+        # str decote from binary:
         self.send_json({"type": "login-token", "token": token.decode()})
 
     def login_auth(self, msg):
@@ -442,13 +464,14 @@ class MobileConsumer(MainConsumer):
     def login_social(self, msg):
         from social_core.backends.google import GoogleOAuth2
         backend = GoogleOAuth2()
+        # do_auth can also sign up the user in the system
         user = backend.do_auth(access_token=msg['token'])
         self.login_user(user)
 
     def login_user(self, user):
         self.user = user
         self.initialize()
-        # add new request: logout
+        # add new possible request
         self.requests.append({"type": "logout", "f": self.logout})
         self.requests.append({"type": "login-token", "f": self.login_token})
         self.requests.append({"type": "expo-token", "f": self.set_expo_token})
@@ -480,6 +503,7 @@ class MobileConsumer(MainConsumer):
         self.send_json(content)
 
     def logout(self, msg=None):
+        async_to_sync(self.channel_layer.group_discard)(str(self.user.id), self.channel_name)
         self.user.profile.expo_token = ""
         self.user.save()
         self.user = None

@@ -1,3 +1,4 @@
+# Channels equivalent of urls.py
 from django.urls import path
 from .consumers import MainConsumer, MobileConsumer
 

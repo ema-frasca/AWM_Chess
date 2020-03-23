@@ -1,3 +1,11 @@
+''' 
+    This file manage the api to use Expo push notification
+    It is a simple HTTPS POST request with these fields:
+        - title : title of the notification, next to the name of the application (we don't use it)
+        - body  : text of the notification
+        - data  : json data to be delivered to the application if the notification is selected
+'''
+
 from requests import post, exceptions
 import json
 
