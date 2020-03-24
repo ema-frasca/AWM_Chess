@@ -1,6 +1,8 @@
 import React from "react";
 import { LoadingPage, addWsListener, removeWsListener } from "./utils"
 
+// here you can view/edit information about you account
+// even if you are logged with google you can modify your username and email
 class AccountPage extends React.Component {
     constructor(props) {
         super(props);

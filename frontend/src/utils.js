@@ -1,5 +1,7 @@
 import React from "react";
 
+
+// Loading screen waiting for WebSocket connection
 class LoadingScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -32,6 +34,7 @@ class LoadingScreen extends React.Component {
     }
 }
 
+// dict to connect the letter representing the piece and their image's name
 const piecesDict = {
     empty: "empty",
     k: "black_king",
@@ -48,6 +51,7 @@ const piecesDict = {
     P: "white_pawn",
 }
 
+// Image of a chess piece
 function PieceImg(props) {
     let className = "chess-piece ";
     if (props.className)
@@ -56,6 +60,7 @@ function PieceImg(props) {
     return <img className={className} alt={props.piece} src={src} ></img>;
 }
 
+// page showed when loading data from server
 function LoadingPage(props) {
     return (
         <div className={props.loading ? "loading-page" : "hidden"}>
@@ -74,10 +79,13 @@ function removeWsListener(id) {
     global.wsOnMessage.delete(id)
 }
 
+// from an int of minutes writes a string of time format h:m
 function displayTime(minutes) {
     return (parseInt(minutes/60)).toString().padStart(2, "0") + ":" +(minutes%60).toString().padStart(2, "0")
 }
 
+// Automatic decreasing time string (using the format above), and never going negative
+// if it reach zero it sends a ws request to check the times left for the moves (in order to automatically end some games)
 class TimerDisplay extends React.Component {
     constructor(props) {
         super(props);

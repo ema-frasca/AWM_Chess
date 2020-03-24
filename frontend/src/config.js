@@ -25,6 +25,7 @@ function changeWS(ws) {
 
 let buffer = [];
 
+// if ws is disconnected messages queued in buffer and sent on ws connection
 global.wsSend = (obj) => {
     if (global.ws)
         global.ws.send(JSON.stringify(obj));
@@ -40,18 +41,19 @@ function send_buffer() {
 }
 
 function connect() {
+    // On production deactivate logging errors for security reasons
     var ws = new WebSocket("ws://"+ window.location.host +"/ws");
     var connectInterval;
 
     ws.onopen = (e) => {
-        console.log("WebSocket connect")
+        //console.log("WebSocket connect")
         timeout = 250;
         clearTimeout(connectInterval);
         changeWS(ws);
     };
 
     ws.onclose = (e) => {
-        console.log("WebSocket disconnect, error " + e.reason);
+        //console.log("WebSocket disconnect, error " + e.reason);
         changeWS(null);
 
         if (timeout < 5000)
@@ -59,7 +61,6 @@ function connect() {
         connectInterval = setTimeout(check, timeout);
     };
 
-    // On production deactivate logging errors for security reasons
     ws.onerror = (e) => {
         //console.error("WebSocket error: " + e.message);
         ws.close();

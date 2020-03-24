@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { LoadingPage, addWsListener, removeWsListener, TimerDisplay } from "./utils";
 
+
+// Home shows your ongoing matches and a short match history (last 5 games)
 class HomePage extends React.Component {
     constructor(props) {
         super(props);

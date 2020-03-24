@@ -9,6 +9,7 @@ import GamePage from "./Game";
 import { LoadingScreen, addWsListener, removeWsListener } from "./utils";
 
 
+// Home should be put as last Route, otherwise it answer any url request
 const menuLines = [
     {text: "HOME", url: "/", component: <HomePage />},
     {text: "QUICK GAME", url: "/quick", component: <LobbyPage quick={true} />},
@@ -67,10 +68,12 @@ function MenuLine(props) {
     );
 }
 
+// Notification number: it express the number of matches in whitch it's your turn
 class NotificationPop extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "notify", }
         this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
         this.notificationRequest = {type: "notifications", f: this.getNotification, reqId: null};
 
