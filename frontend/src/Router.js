@@ -73,8 +73,9 @@ class NotificationPop extends React.Component {
     constructor(props) {
         super(props);
 
-        // ws message: {type: "notify", }
+        // ws message: {type: "notify", (id: NUMBER)}
         this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
+        // ws message: {type: "notifications", number: NUMBER, games-id: [NUMBER]}
         this.notificationRequest = {type: "notifications", f: this.getNotification, reqId: null};
 
         this.state = {

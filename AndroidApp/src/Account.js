@@ -5,10 +5,13 @@ import styles, { FadeInView, MyText, MyTextInput, MyButton } from './styles'
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 
+// here you can view/edit information about you account
+// even if you are logged with google you can modify your username and email, but not your password
 class AccountPage extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "account-page", username: STRING, email: STRING, rank: NUMBER, category: STRING, google: BOOL}
         this.pageRequest = {type: "account-page", f: this.getPageInfo, reqId: null};
 
         this.state = {
@@ -66,10 +69,13 @@ function GoogleIcon(props) {
     );
 }
 
+// Component for editing username and email
+// sending empty string won't modify anything
 class UserEditField extends React.Component {
     constructor(props) {
         super(props);
         
+        // ws message: {type: "account-edit", field: STRING, (error: STRING)}
         this.editRequest = {type: "account-edit", f: this.getError, reqId: null};
 
         this.state = {
@@ -140,11 +146,13 @@ class UserEditField extends React.Component {
     }
 }
 
+// Component for change your password
+// if change is successfull you will be redirected to login page
 class PasswordChange extends React.Component {
-    // response className={this.state.response ? "form-msg " + (this.state.error ? "red" : "green") : "hidden"}
     constructor(props) {
         super(props);
         
+        // ws message: {type: "account-psw", (error: STRING)}
         this.pswRequest = {type: "account-psw", f: this.getResponse, reqId: null};
 
         this.state = {

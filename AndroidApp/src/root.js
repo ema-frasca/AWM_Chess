@@ -16,10 +16,12 @@ import AccountPage from "./Account";
 import GamePage from "./Game";
 
 
+// Login pipeline: try with token --false-> wait for authentication (with credentials or google)
 class Root extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "login-token", ((token: STRING) or (error: STRING))}
         this.loginToken = {type: "login-token", f: this.loginSuccess, reqId: null};
 
         this.state = {
@@ -27,30 +29,6 @@ class Root extends React.Component {
             token : null,
             authenticated : false,
         };
-    }
-
-    getToken = () => {
-        AsyncStorage.getItem('tokenWS', (err, result) => {
-            this.setState({token: result})
-            this.tryTokenLogin();
-        });
-    }
-
-    firstLogin = async (token) => {
-        AsyncStorage.setItem('tokenWS', token);
-        this.setState({token: token});
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        if (status !== 'granted') {
-            return;
-        }
-        expoToken = await Notifications.getExpoPushTokenAsync();
-        global.wsSend({type: "expo-token", token: expoToken});
-    }
-
-    logout = () => {
-        global.wsSend({type: "logout"});
-        AsyncStorage.removeItem('tokenWS');
-        this.setState({token: null, authenticated: false});
     }
 
     componentDidMount() {
@@ -63,6 +41,33 @@ class Root extends React.Component {
     componentWillUnmount() {
         removeWsListener(this.loginToken.reqId);
         global.wsOnStateChange.pop();
+    }
+
+    getToken = () => {
+        AsyncStorage.getItem('tokenWS', (err, result) => {
+            this.setState({token: result})
+            this.tryTokenLogin();
+        });
+    }
+
+    // function called only after authentication (with credentials or google), not after token login
+    firstLogin = async (token) => {
+        AsyncStorage.setItem('tokenWS', token);
+        this.setState({token: token});
+
+        // Get expo token and send it to our server
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        if (status !== 'granted') {
+            return;
+        }
+        expoToken = await Notifications.getExpoPushTokenAsync();
+        global.wsSend({type: "expo-token", token: expoToken});
+    }
+
+    logout = () => {
+        global.wsSend({type: "logout"});
+        AsyncStorage.removeItem('tokenWS');
+        this.setState({token: null, authenticated: false});
     }
 
     loginSuccess = (content) => {
@@ -83,6 +88,7 @@ class Root extends React.Component {
             this.setState({loading: false})
     }
 
+    // login every time WebSocket re-connect 
     wsChange = () => {
         if (global.ws)
             this.tryTokenLogin()
@@ -133,7 +139,9 @@ class NotificationPop extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "notify", (id: NUMBER)}
         this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
+        // ws message: {type: "notifications", number: NUMBER, games-id: [NUMBER]}
         this.notificationRequest = {type: "notifications", f: this.getNotification, reqId: null};
 
         this.state = {

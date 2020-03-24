@@ -8,6 +8,7 @@ class LobbyPage extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "matches-left", number: NUMBER, redirect: (NUMBER or NULL)}
         this.userMatchesLeft = {type: "matches-left", f: this.getLeftMatches, reqId: null};
 
         this.quick = props.route.params.quick;
@@ -56,6 +57,8 @@ class Lobbies extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "matches-lobbies", quick: BOOL, lobbies: [obj]}
+        //  lobbies obj: {id: NUMBER, random: BOOL, quick: BOOL, time: NUMBER (white or black): {username: STRING, category: STRING}}
         this.lobbiesRequest = {type: "matches-lobbies", f: this.getLobbies, reqId: null};
 
         this.state = {
@@ -102,6 +105,9 @@ class MyLobby extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "matches-mylobby", quick: BOOL, lobby: (obj or FALSE), options: (FALSE or obj)}
+        //  lobby obj: {id: NUMBER, random: BOOL, quick: BOOL, time: NUMBER (white or black): {username: STRING, category: STRING}}
+        //  options obj: {colors: [STRING], times: [NUMBER], unit: STRING}
         this.myLobbyRequest = {type: "matches-mylobby", f: this.getMyLobby, reqId: null};
 
         this.state = {

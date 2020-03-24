@@ -7,6 +7,7 @@ class LobbyPage extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "matches-left", number: NUMBER, redirect: (NUMBER or NULL)}
         this.userMatchesLeft = {type: "matches-left", f: this.getLeftMatches, reqId: null};
 
         this.state = {
@@ -54,6 +55,8 @@ class Lobbies extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "matches-lobbies", quick: BOOL, lobbies: [obj]}
+        //  lobbies obj: {id: NUMBER, random: BOOL, quick: BOOL, time: NUMBER (white or black): {username: STRING, category: STRING}}
         this.lobbiesRequest = {type: "matches-lobbies", f: this.getLobbies, reqId: null};
 
         this.state = {
@@ -100,6 +103,9 @@ class MyLobby extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "matches-mylobby", quick: BOOL, lobby: (obj or FALSE), options: (FALSE or obj)}
+        //  lobby obj: {id: NUMBER, random: BOOL, quick: BOOL, time: NUMBER (white or black): {username: STRING, category: STRING}}
+        //  options obj: {colors: [STRING], times: [NUMBER], unit: STRING}
         this.myLobbyRequest = {type: "matches-mylobby", f: this.getMyLobby, reqId: null};
 
         this.state = {
@@ -144,12 +150,10 @@ class CreateLobby extends React.Component {
     constructor(props) {
         super(props);
 
-        this.createMsg = {type: "matches-create", quick: props.quick};
-
         this.state = {
             onEdit: false,
             color: props.options.colors[0],
-            time: props.options.times[0]
+            time: props.options.times[0],
         };
     }
 
@@ -165,7 +169,7 @@ class CreateLobby extends React.Component {
     handleSubmit = (e) => {
         e.preventDefault();
         global.wsSend({
-            type: this.createMsg.type,
+            type: "matches-create",
             quick: this.props.quick,
             color: this.state.color,
             time: parseInt(this.state.time)

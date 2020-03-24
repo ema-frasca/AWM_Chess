@@ -10,6 +10,7 @@ import { loadAsync } from 'expo-font';
 import { SplashScreen } from 'expo';
 
 
+// Splash screen showed until the font is not loaded
 SplashScreen.preventAutoHide();
 
 export default class App extends React.Component {
@@ -36,7 +37,7 @@ export default class App extends React.Component {
 	
 	render () {
 		if (!this.state.fontloaded)
-		return null;
+			return null;
 		return (
 			<View style={{flex: 1}}>
 				<FadeInView>

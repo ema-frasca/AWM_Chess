@@ -11,8 +11,10 @@ global.wsOnMessage = new Map();
 
 let timeout = 250;
 
+// default host (useful only for emulators or rare cases)
 global.host = "127.0.0.1:8000";
 
+// ID for google sign in API
 import { ANDROID_CLIENT_ID } from '../parameters'
 global.ANDROID_CLIENT_ID = ANDROID_CLIENT_ID
 
@@ -25,6 +27,7 @@ function changeWS(ws) {
 
 let buffer = [];
 
+// if ws is disconnected messages queued in buffer and sent on ws connection
 global.wsSend = (obj) => {
     if (global.ws)
         global.ws.send(JSON.stringify(obj));

@@ -5,12 +5,16 @@ import { addWsListener, removeWsListener, LoadingPage, TimerDisplay } from './ut
 import styles, { FadeInView, MyText, InlineView, GameLink, PoppingView } from './styles'
 
 
-
+// Home shows your ongoing matches and a short match history (last 5 games)
 class HomePage extends React.Component {
 	constructor(props) {
 		super(props);
 
+        // ws message: {type: "notify", (id: NUMBER)}
 		this.notificationListener = {type: "notify", f: this.onNotification, notId: null};
+		// ws message: {type: "home-page", list: [obj], usename: STRING, history: [obj]}
+        //  list obj: {id: NUMBER, vs: {username: STRING, category: STRING}, time: NUMBER, turn: BOOL}
+        //  history obj: {id: NUMBER, vs: STRING, result: STRING}
 		this.homeRequest = {type: "home-page", f: this.getHome, reqId: null};
 
 		this.state = {

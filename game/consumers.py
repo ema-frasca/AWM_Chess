@@ -53,7 +53,7 @@ class MainConsumer(JsonWebsocketConsumer):
         from io import StringIO
         matches = InMatch.user_matches(self.user)
         for match in matches:
-            self.games[match.pk] = chess.pgn.read_game(StringIO(match.pgn), Visitor= chess.pgn.BoardBuilder)
+            self.games[match.pk] = chess.pgn.read_game(StringIO(match.pgn), Visitor=chess.pgn.BoardBuilder)
 
     def message_opponent(self, match, msg):
         opponent = match.versus(self.user)
@@ -209,7 +209,8 @@ class MainConsumer(JsonWebsocketConsumer):
     
     def create_board(self, msg):
         if msg["sender"] != self.channel_name:
-            self.games[msg["id"]] = chess.Board()
+            if msg["id"] not in self.games:
+                self.games[msg["id"]] = chess.Board()
 
     def start_game(self, msg):
         lobby = Lobby.get_or_none(msg["id"])
@@ -252,6 +253,9 @@ class MainConsumer(JsonWebsocketConsumer):
         else:
             if not self.times_check({"match": match}):
                 return
+            if match.pk not in self.games:
+                from io import StringIO
+                self.games[match.pk] = chess.pgn.read_game(StringIO(match.pgn), Visitor=chess.pgn.BoardBuilder)
             content["board"] = self.games[match.pk].board_fen()
             if match.user_has_turn(self.user):
                 # example: moves = {'e2': {'e4':[], 'e5': []} 'f7': {'f8': ['q', 'r']}} 
@@ -264,7 +268,7 @@ class MainConsumer(JsonWebsocketConsumer):
                 content["moves"] =  moves
                 content["claim"] = self.games[match.pk].can_claim_draw()
             else:
-                content["moves"] = []
+                content["moves"] = {}
                 content["claim"] = False
 
         self.send_json(content)

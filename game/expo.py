@@ -26,4 +26,8 @@ def send_push_notification(to, body, data, title=''):
         'body': body,
         'data': data,
     }
-    post(url, headers=headers, data=json.dumps(data))
+    try:
+        post(url, headers=headers, data=json.dumps(data))
+    except exceptions.RequestException as err:
+        print(err)
+    

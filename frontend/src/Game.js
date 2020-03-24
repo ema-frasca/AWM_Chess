@@ -11,7 +11,14 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
 
+        // ws message: {type: "notify", (id: NUMBER)}
         this.notificationListener = {type: "notify", f: this.onNotification, notId: null}
+        // ws message: {type: "game-page", id: NUMBER, ((error: STRING) or (MATCHENDED) or (INMATCH))}
+        //  MATCHENDED: {match: {pgn: [STRING], black: USER, white: USER, result: STRING, reason: STRING}, board: STRING, result: STRING}
+        //  INMATCH: {match: {MDICT}, board: STRING, claim: BOOL, moves: (obj)}
+        //   MDICT: {pgn: [STRING], black: USER, white: USER, time: {black: NUMBER, white: NUMBER}, whiteTurn: BOOL}
+        //   USER: {username: STRING, category: STRING}
+        //   moves obj example: {'e2': {'e4':[], 'e5': []} 'f7': {'f8': ['q', 'r']}} or {} 
         this.gameRequest = {type: "game-page", f: this.getGame, reqId: null};
         this.id = parseInt(this.props.id)
 
@@ -144,6 +151,8 @@ function MovesList(props){
     );
 }
 
+// props.moves example: {'e2': {'e4':[], 'e5': []} 'f7': {'f8': ['q', 'r']}} or {} 
+// props.board example: "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R"
 class ChessBoard extends React.Component {
     constructor(props) {
         super(props);
@@ -153,6 +162,7 @@ class ChessBoard extends React.Component {
             promotion : null
         };
 
+        // options for promotion
         this.options = [ "q", "b", "n", "r"]
         this.columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
     }
