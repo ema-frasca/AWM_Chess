@@ -82,12 +82,12 @@ class Profile(models.Model):
             "category" : self.category(),
         }
     
-    def expo_notify(self, msg_type, game_id):
+    def expo_notify(self, msg_type, game_id, opponent):
         if self.expo_token:
             msg = {
-                'start': f"Started match vs {self.user.username}",
-                'move': f"{self.user.username} made their move",
-                'end': f"Your match vs {self.user.username} ended",
+                'start': f"Started match vs {opponent}",
+                'move': f"{opponent} made their move",
+                'end': f"Your match vs {opponent} ended",
             }
             send_push_notification(self.expo_token, msg[msg_type], {'id': game_id})
         

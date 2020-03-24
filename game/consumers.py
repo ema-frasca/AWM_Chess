@@ -63,7 +63,7 @@ class MainConsumer(JsonWebsocketConsumer):
     # push notification to mobile
     def expo_notify(self, match, msg_type):
         opponent = match.versus(self.user)
-        opponent.profile.expo_notify(msg_type, match.pk)
+        opponent.profile.expo_notify(msg_type, match.pk, self.user.username)
 
     # used to update all my connected clients when I do something
     def message_myself(self, msg):
