@@ -167,18 +167,18 @@ class ChessBoard extends React.Component {
         this.columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
     }
 
-    handleClick = (id) => {
-        if (this.state.selected && id in this.props.moves[this.state.selected]) {
-            if (this.props.moves[this.state.selected][id].length){
-                this.setState({promotion: id});
+    handleClick = (idCell) => {
+        if (this.state.selected && idCell in this.props.moves[this.state.selected]) {
+            if (this.props.moves[this.state.selected][idCell].length){
+                this.setState({promotion: idCell});
             }
             else {
-                global.wsSend({type: "game-move", move: this.state.selected + id, id: this.props.id});
+                global.wsSend({type: "game-move", move: this.state.selected + idCell, id: this.props.id});
                 this.setState({selected: null});    
             }
         }
         else
-            this.setState({selected: id});    
+            this.setState({selected: idCell});    
     }
 
     promotionClick = (el) => {

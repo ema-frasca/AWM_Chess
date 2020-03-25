@@ -1,6 +1,6 @@
 import React from 'react'
-import { View, Keyboard, ScrollView, KeyboardAvoidingView } from 'react-native'
-import { imgs, addWsListener, removeWsListener, LoadingPage, MyImage } from './utils'
+import { View, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { addWsListener, removeWsListener, LoadingPage, MyImage } from './utils'
 import styles, { FadeInView, MyText, MyTextInput, MyButton } from './styles'
 import { RFPercentage } from "react-native-responsive-fontsize";
 
@@ -34,6 +34,7 @@ class AccountPage extends React.Component {
         removeWsListener(this.pageRequest.reqId)
     }
 
+    // KeyboardAvoidingView should be active only when the user focus one of the PasswordChange text input 
     avoidKeyboardChange = (avoid) => {
         this.setState({avoidKeyboard: avoid});
     }
@@ -46,7 +47,8 @@ class AccountPage extends React.Component {
         return (
             <ScrollView style={styles.mainView} keyboardShouldPersistTaps="handled">
                 <KeyboardAvoidingView keyboardVerticalOffset={-RFPercentage(24)} 
-                behavior="position" enabled={this.state.avoidKeyboard}>
+                    behavior="position" enabled={this.state.avoidKeyboard}
+                >
                     <FadeInView style={[{alignItems: 'center'}, styles.bottomSpace]}>
                         <UserEditField field="username" value={user.username} akc={this.avoidKeyboardChange} />
                         <MyText size={2} bold style={{marginBottom: '3%'}} >Rank: {user.category} ({user.rank})</MyText>
@@ -147,7 +149,6 @@ class UserEditField extends React.Component {
 }
 
 // Component for change your password
-// if change is successfull you will be redirected to login page
 class PasswordChange extends React.Component {
     constructor(props) {
         super(props);

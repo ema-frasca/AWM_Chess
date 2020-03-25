@@ -152,8 +152,6 @@ class CreateLobby extends React.Component {
     constructor(props) {
         super(props);
 
-        this.createMsg = {type: "matches-create", quick: props.quick};
-
         this.state = {
             onEdit: false,
             color: props.options.colors[0],
@@ -161,14 +159,14 @@ class CreateLobby extends React.Component {
         };
     }
 
-    toggleEdit = (e) => {
+    toggleEdit = () => {
         const onEdit = !this.state.onEdit;
         this.setState({onEdit: onEdit});
     }
 
     handleSubmit = () => {
         global.wsSend({
-            type: this.createMsg.type,
+            type: "matches-create",
             quick: this.props.quick,
             color: this.state.color,
             time: parseInt(this.state.time)

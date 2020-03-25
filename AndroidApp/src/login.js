@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableHighlight, Keyboard, KeyboardAvoidingView } from 'react-native'
+import { View, TouchableHighlight, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native'
 import { addWsListener, removeWsListener, MyImage } from './utils'
 import styles, { FadeInView, MyText, MyTextInput, MyButton, MyAuthLinks } from './styles'
 import { logInAsync } from 'expo-google-app-auth'
@@ -37,21 +37,25 @@ class LoginPage extends React.Component {
 
     render() {
         return (
-            <FadeInView style={styles.login.view}>
-                <LoginForm />
-                <TouchableHighlight style={{width: '80%'}} activeOpacity={0.6} underlayColor="white" onPress={this.googleLogin}>
-                    <MyImage width="100%" noHeight name="googleLogin"/>
-                </TouchableHighlight>
-                <AuthButtons navigation={this.props.navigation} />
-            </FadeInView>
+            <ScrollView>
+                <FadeInView style={styles.login.view}>
+                    <LoginForm />
+                    <TouchableHighlight style={{width: '80%'}} activeOpacity={0.6} underlayColor="white" onPress={this.googleLogin}>
+                        <MyImage width="100%" noHeight name="googleLogin"/>
+                    </TouchableHighlight>
+                    <AuthButtons navigation={this.props.navigation} />
+                </FadeInView>
+            </ScrollView>
         );
     }
 }
 
+// if login is successfull it is listened by Root component 
 class LoginForm extends React.Component {
     constructor(props) {
         super(props);
         
+        // ws message: {type: "login-auth", error: STRING}
         this.authRequest = {type: "login-auth", f: this.authError, reqId: null};
 
         this.state = {
@@ -91,7 +95,7 @@ class LoginForm extends React.Component {
                     secureTextEntry
                 />
                 <MyButton onPress={() => global.wsSend({type: "login-auth", ...this.state })} style={styles.login.button} >Login</MyButton>
-                {this.state.error ? <MyText color="red">{this.state.error}</MyText> : null }
+                {this.state.error ? <MyText center color="red">{this.state.error}</MyText> : null }
             </View>
         );
     }
@@ -107,10 +111,13 @@ function AuthButtons(props) {
     );
 }
 
+// if registration is successfull it is listened by Root component 
+// log in is automatically done after a successfull registration
 class SignupPage extends React.Component {
     constructor(props){
         super(props);
         
+        // ws message: {type: "login-signup", error: STRING}
         this.signupRequest = {type: "login-signup", f: this.signupError, reqId: null};
 
         this.state = {

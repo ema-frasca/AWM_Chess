@@ -461,7 +461,7 @@ class MobileConsumer(MainConsumer):
         from django.contrib.auth import authenticate
         user = authenticate(username=msg["username"], password=msg["password"])
         if not user:
-            self.send_json({"type": "login-auth", "error": "Incorrect user and password"})
+            self.send_json({"type": "login-auth", "error": "Incorrect credentials"})
             return
         self.login_user(user)
 

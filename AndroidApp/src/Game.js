@@ -183,18 +183,18 @@ class ChessBoard extends React.Component {
         this.columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
     }
 
-    handleClick = (id) => {
-        if (this.state.selected && id in this.props.moves[this.state.selected]) {
-            if (this.props.moves[this.state.selected][id].length){
-                this.setState({promotion: id});
+    handleClick = (idCell) => {
+        if (this.state.selected && idCell in this.props.moves[this.state.selected]) {
+            if (this.props.moves[this.state.selected][idCell].length){
+                this.setState({promotion: idCell});
             }
             else {
-                global.wsSend({type: "game-move", move: this.state.selected + id, id: this.props.id});
+                global.wsSend({type: "game-move", move: this.state.selected + idCell, id: this.props.id});
                 this.setState({selected: null});    
             }
         }
         else
-            this.setState({selected: id});    
+            this.setState({selected: idCell});    
     }
 
     promotionClick = (el) => {
@@ -215,14 +215,16 @@ class ChessBoard extends React.Component {
             borderColor: 'black',
         };
 
+        // outer border of the board
+        borderWidth = RFPercentage(0.2);
         if (row === 8)
-            style.borderTopWidth = RFPercentage(0.2);
+            style.borderTopWidth = borderWidth;
         if (row === 1)
-            style.borderBottomWidth = RFPercentage(0.2);
+            style.borderBottomWidth = borderWidth;
         if (column === "a")
-            style.borderLeftWidth = RFPercentage(0.2);
+            style.borderLeftWidth = borderWidth;
         if (column === "h")
-            style.borderRightWidth = RFPercentage(0.2);
+            style.borderRightWidth = borderWidth;
 
         let buttonStyle = {};
         if (this.state.selected){
@@ -292,8 +294,7 @@ function OnPromotion(props) {
     const formStyle = {
         width: '90%', height: '45%', 
         backgroundColor: 'white', 
-        borderColor: 'black', borderRadius: RFPercentage(3), 
-        borderWidth: RFPercentage(0),
+        borderRadius: RFPercentage(3),
         padding: '2%',
     }
 

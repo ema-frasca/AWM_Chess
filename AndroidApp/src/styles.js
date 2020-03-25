@@ -5,6 +5,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
 
 
+// Sizes used for our fonts, similar to h1,h2...h6 of frontend
 const sizeDict = {
 	1: RFPercentage(6.5),
 	2: RFPercentage(5.5),
@@ -94,7 +95,6 @@ const styles = {
 
 	mainView: {
 		paddingHorizontal: '2%', paddingTop: '3%',
-		paddingBottom: 200,
 	},
 
 	bottomSpace: {marginBottom: '5%'},
@@ -110,51 +110,53 @@ const styles = {
 
 };
 
+// component that shows the tab menu
 function MyTabBar({ state, descriptors, navigation }) {
 	return (
 		<View style={{ flexDirection: 'row' }}>
-		{state.routes.map((route, index) => {
-			const { options } = descriptors[route.key];
-			if (options.hidden)
-			return null;
-			const label = options.title ? options.title : route.name;
+			{state.routes.map((route, index) => {
+				const { options } = descriptors[route.key];
+				if (options.hidden)
+					return null;
+				const label = options.title ? options.title : route.name;
 
-			const isFocused = state.index === index;
+				const isFocused = state.index === index;
 
-			const onPress = () => {
-			const event = navigation.emit({
-				type: 'tabPress',
-				target: route.key,
-			});
+				const onPress = () => {
+					const event = navigation.emit({
+						type: 'tabPress',
+						target: route.key,
+					});
 
-			if (!isFocused && !event.defaultPrevented) {
-				navigation.navigate(route.name);
-			}
-			};
+					if (!isFocused && !event.defaultPrevented) {
+						navigation.navigate(route.name);
+					}
+				};
 
-			return (
-			<TouchableHighlight
-				key={route.name}
-				onPress={onPress}
-				underlayColor="rgb(255, 255, 220)"
-				style={{ flex: 1, justifyContent: 'center', 
-				backgroundColor: isFocused ? 'rgb(255, 250, 200)' : 'white',
-				borderColor: 'grey',
-				borderWidth: 0.5, borderBottomWidth: 0, 
-			}}>
-				<View>
-					{options.icon}
-					<MyText size={5} bold center color={isFocused ? 'black' : 'grey'}>
-						{label}
-					</MyText>
-				</View>
-			</TouchableHighlight>
-			);
-		})}
+				return (
+					<TouchableHighlight
+						key={route.name}
+						onPress={onPress}
+						underlayColor="rgb(255, 255, 220)"
+						style={{ flex: 1, justifyContent: 'center', 
+						backgroundColor: isFocused ? 'rgb(255, 250, 200)' : 'white',
+						borderColor: 'grey',
+						borderWidth: 0.5, borderBottomWidth: 0, 
+					}}>
+						<View>
+							{options.icon}
+							<MyText size={5} bold center color={isFocused ? 'black' : 'grey'}>
+								{label}
+							</MyText>
+						</View>
+					</TouchableHighlight>
+				);
+			})}
 		</View>
 	);
 }
 
+// View to add a fade in animation to everithing it contains
 class FadeInView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -175,6 +177,7 @@ class FadeInView extends React.Component {
 	}
 }
 
+// View to add a zoom in and zoom out animation to everithing it contains
 class PoppingView extends React.Component {
     constructor(props){
         super(props);
@@ -242,6 +245,7 @@ function MyButton(props) {
 	);
 }
 
+// component for link-styled buttons
 function MyAuthLinks(props){
 	const hSize = props.size ? props.size : 4;
 	return (
@@ -251,6 +255,7 @@ function MyAuthLinks(props){
 	);
 }
 
+// component for buttons used to enter a match
 function GameLink(props) {
     const navigation = useNavigation()
 	const press = () => {navigation.jumpTo('Game', {id: props.id})};
@@ -261,6 +266,7 @@ function GameLink(props) {
     );
 }
 
+// equivalent of the html select
 function MyPicker(props){
 	return(
 		<View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
@@ -280,6 +286,7 @@ function MyPicker(props){
 	);
 }
 
+// shortcut view to display things horizontally
 function InlineView(props) {
 	return(
 		<View style={[{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}, props.style]}>

@@ -30,6 +30,7 @@ class HomePage extends React.Component {
 		this.notificationListener.notId = addWsListener(this.notificationListener);
 		this.requestPage();
 
+		// Add listener to expo-push notification (only once)
 		if (! global.notListener){
 			global.notListener = true;
 			Notifications.addListener((notification) => {
@@ -62,7 +63,7 @@ class HomePage extends React.Component {
 		if (this.state.loading)
 			return <LoadingPage />;
 		return (
-			<ScrollView style={{paddingHorizontal: '1%', paddingTop: '3%'}}>
+			<ScrollView style={styles.mainView}>
 				<FadeInView style={styles.bottomSpace}>
 					<MyText bold size={1} center >Welcome {this.state.user}</MyText>
 					{this.state.list.map((match, i) => (
@@ -87,7 +88,6 @@ function ShowMatchLink(props){
 }
 
 function InMatchLine(props){
-	// popping turn animation
 	return(
 		<FadeInView style={styles.gameBox}>
 			<InlineView>
