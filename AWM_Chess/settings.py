@@ -30,7 +30,7 @@ if os.path.exists('parameters.json'):
     with open('parameters.json', 'r') as p:
         variables = json.load(p)
 else:
-    variables = { "ALLOWED_HOSTS": "127.0.0.1" }
+    variables = { "ALLOWED_HOSTS": "127.0.0.1", "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY": "", "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET": ""}
 
 ALLOWED_HOSTS = variables["ALLOWED_HOSTS"]
 

@@ -13,8 +13,14 @@ We made it using:
  
 To set up a virtual environment:
 
+    // on windows
     python -m venv venv
     venv\Scripts\activate.bat
+    pip install -r requirements.txt
+
+    // on linux
+    python -m venv venv
+    source venv/Scripts/activate
     pip install -r requirements.txt
 
 Rename "parameters_rename.json" in "parameters.json", and inside it add your local ip to "ALLOWED_HOSTS"
