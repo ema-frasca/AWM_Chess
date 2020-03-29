@@ -111,7 +111,7 @@ class UserEditField extends React.Component {
         let btnText = this.props.value ? "change " : "add ";
         btnText += this.props.field;
         if (this.state.onEdit){
-            value = <input type="text" value={this.state.text} style={{width: 3+this.state.text.length + "ch"}}
+            value = <input type="text" value={this.state.text} style={{width: 3 + this.state.text.length + "ch"}}
                     onChange={(e) => this.setState({text: e.target.value})} />;
             btnText = "enter";
         }

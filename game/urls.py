@@ -9,5 +9,5 @@ urlpatterns = [
     path('quick', views.HomeView.as_view(), name='quick'),
     path('slow', views.HomeView.as_view(), name='slow'),
     path('user', views.HomeView.as_view(), name='user'),
-    path('game/<int:id>', views.HomeView.as_view(), name='user'),
+    path('game/<int:id>', views.HomeView.as_view(), name='game'),
 ]
