@@ -11,8 +11,10 @@ global.wsOnMessage = new Map();
 
 let timeout = 250;
 
+const PRODUCTION = true
+
 // default host (useful only for emulators or rare cases)
-global.host = "127.0.0.1:8000";
+global.host = PRODUCTION ? "awm-chess.herokuapp.com" : "127.0.0.1:8000";
 
 // ID for google sign in API
 import { ANDROID_CLIENT_ID } from '../parameters'
@@ -43,7 +45,8 @@ function send_buffer() {
 }
 
 function connect() {
-    var ws = new WebSocket("ws://"+ global.host +"/mobile-ws");
+    const protocol = PRODUCTION ? "wss://" : "ws://"
+    var ws = new WebSocket(protocol+ global.host +"/mobile-ws");
     var connectInterval;
 
     ws.onopen = (e) => {

@@ -10,6 +10,15 @@ We made it using:
 
 - Mobile app: Expo Client, using react-native and react-navigation
 
+You can use the deployed version of the app at: https://awm-chess.herokuapp.com/
+
+You can download the mobile app (with Expo app) at: https://expo.io/@emafrasca/awm-chess 
+
+We tested the application only on Android devices, so don't expect it to run on IOS.
+
+PS: this repository is not the one used on heroku
+
+## Clone and run locally
  
 To set up a virtual environment:
 
@@ -34,13 +43,13 @@ If you want to enable google sign in you have to insert your oauth2 api credenti
 The folders "frontend" and "AndroidApp" are not needed to the server to run. 
 They contain our npm files of the client web and mobile applications.
 
-### Mobile App
+### Mobile App locally
 
-Download app with Expo app: https://expo.io/@emafrasca/awm-chess 
+- Open the app and then disconnect from internet your device.
 
-In the loading screen insert [your-ip:port] of your django server
+- In the loading screen insert [your-ip:port] of your django server
 
-We tested the application only on Android devices, so don't expect it to run on IOS.
+- Connect the device to the network where yout backend is running
 
 If you modify the app inside AndroidApp and run your version, rename "parameters_rename.js" to "parameters.js". 
 And if you want to enable Google sign in add inside it your ANDROID_CLIENT_ID key.
