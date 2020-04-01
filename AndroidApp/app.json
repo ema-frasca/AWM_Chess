@@ -26,6 +26,10 @@
     "ios": {
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.ema_frasca.awm_chess",
+      "versionCode": 1
+    },
     "description": "This is a coursework of University of Modena and Reggio Emilia. It is a mobile (and browser) application to play chess online. More information on GitHub readme.md",
     "githubUrl": "https://github.com/ema-frasca/AWM_Chess"
   }
